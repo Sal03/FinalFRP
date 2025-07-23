@@ -445,7 +445,11 @@ class RoutingService {
     try {
       // Try Google Maps first if available
       if (this.services.truck && this.services.truck.isAvailable) {
-        return await this.services.truck.getTruckRoute(origin, destination);
+        const route = await this.services.truck.getTruckRoute(origin, destination);
+        return {
+          ...route,
+          route_path: route.route_path
+        };
       }
       
       // Fallback to distance matrix

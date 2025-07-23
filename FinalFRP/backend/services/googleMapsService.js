@@ -1,4 +1,5 @@
 const axios = require('axios');
+const polyline = require('@mapbox/polyline');
 
 class GoogleMapsService {
   constructor() {
@@ -60,6 +61,11 @@ class GoogleMapsService {
 
       const mainRoute = routes[0];
 
+      // Decode polyline into [lat, lng] coordinate pairs if available
+      const routePath = mainRoute.route_polyline
+        ? polyline.decode(mainRoute.route_polyline).map(([lat, lng]) => [lat, lng])
+        : [];
+
       console.log(`🚛 Truck route: ${origin} → ${destination}: ${mainRoute.distance_miles} mi, ${mainRoute.duration_hours} h`);
 
       return {
@@ -69,6 +75,7 @@ class GoogleMapsService {
         route_type: 'truck_highway',
         routing_method: 'google_maps_directions',
         polyline: mainRoute.route_polyline,
+        route_path: routePath,
         alternative_routes: routes.slice(1, 3) // Include up to 2 alternate options
       };
 
