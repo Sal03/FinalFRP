@@ -68,6 +68,7 @@ const DISTANCE_MATRIX = {
     'Savannah, GA-Jacksonville, FL': { truck: 140, rail: 139, ship: 127, pipeline: null },
     'Jacksonville, FL-Miami, FL': { truck: 345, rail: 354, ship: 334, pipeline: null },
     'Tampa Bay, FL-Miami, FL': { truck: 280, rail: 281, ship: 250, pipeline: null },
+    'Miami, FL-Norfolk, VA': { truck: 971, rail: 912, ship: 829, pipeline: null },
   
     // Northeast connections
     'Philadelphia, PA-Norfolk, VA': { truck: 300, rail: 295, ship: 285, pipeline: null },

@@ -7,10 +7,10 @@ class MaritimeService {
         distance_miles: 399,
         route_type: 'coastal',
         waypoints: [
-          [34.0522, -118.2437],
+          [33.7292, -118.2620],
           [35.3606, -120.8493],
           [36.6002, -121.8947],
-          [37.7749, -122.4194]
+          [37.8044, -122.2712]
         ],
         shipping_lanes: ['Pacific Coast'],
         transit_days: 2
@@ -20,7 +20,7 @@ class MaritimeService {
         distance_miles: 1253,
         route_type: 'coastal',
         waypoints: [
-          [34.0522, -118.2437],
+          [33.7292, -118.2620],
           [36.6002, -121.8947],
           [39.1612, -123.7881],
           [43.3504, -124.3738],
@@ -35,7 +35,7 @@ class MaritimeService {
         distance_miles: 952,
         route_type: 'coastal',
         waypoints: [
-          [34.0522, -118.2437],
+          [33.7292, -118.2620],
           [36.6002, -121.8947],
           [39.1612, -123.7881],
           [43.3504, -124.3738],
@@ -51,9 +51,9 @@ class MaritimeService {
         distance_miles: 351,
         route_type: 'coastal',
         waypoints: [
-          [29.7604, -95.3698],
+          [29.7050, -95.0030],
           [29.4724, -94.0572],
-          [29.3013, -90.0715]
+          [29.9355, -90.0572]
         ],
         shipping_lanes: ['Gulf Intracoastal Waterway'],
         transit_days: 2
@@ -63,9 +63,9 @@ class MaritimeService {
         distance_miles: 350,
         route_type: 'coastal',
         waypoints: [
-          [29.7604, -95.3698],
+          [29.7050, -95.0030],
           [29.4724, -94.0572],
-          [29.6849, -88.0431]
+          [30.6944, -88.0431]
         ],
         shipping_lanes: ['Gulf Coast'],
         transit_days: 2
@@ -97,6 +97,21 @@ class MaritimeService {
         ],
         shipping_lanes: ['Atlantic Coast'],
         transit_days: 2
+      },
+      'Miami, FL-Norfolk, VA': {
+        distance_nm: 720,
+        distance_miles: 829,
+        route_type: 'coastal',
+        waypoints: [
+          [25.7617, -80.1918],
+          [30.3322, -81.6557],
+          [32.0835, -81.0998],
+          [33.8734, -78.8808],
+          [35.2271, -75.5449],
+          [36.8468, -76.2852]
+        ],
+        shipping_lanes: ['Atlantic Coast'],
+        transit_days: 4
       },
 
       // 🌎 Existing routes retained (unchanged) ↓
