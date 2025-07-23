@@ -139,26 +139,30 @@ async function calculateBasicCost(volume, distance, mode, fuelType) {
       console.log('⚠️ OpenAI service not available, using static pricing');
     }
 
-    // Route to specific calculation function
+    // Route to specific calculation function and attach fuel price
+    let result;
     if (mode === 'truck') {
-      return calculateTruckCost(validVolume, validDistance, fuelType, transportFactors, aiEnhanced);
+      result = calculateTruckCost(validVolume, validDistance, fuelType, transportFactors, aiEnhanced);
     } else if (mode === 'rail') {
-      return calculateRailCost(validVolume, validDistance, fuelType, transportFactors, aiEnhanced);
+      result = calculateRailCost(validVolume, validDistance, fuelType, transportFactors, aiEnhanced);
     } else if (mode === 'ship') {
-      return calculateShipCost(validVolume, validDistance, fuelType, transportFactors, aiEnhanced);
+      result = calculateShipCost(validVolume, validDistance, fuelType, transportFactors, aiEnhanced);
     } else if (mode === 'pipeline') {
-      return calculatePipelineCost(validVolume, validDistance, fuelType, transportFactors, aiEnhanced);
+      result = calculatePipelineCost(validVolume, validDistance, fuelType, transportFactors, aiEnhanced);
     } else {
       // Fallback for unknown modes
-      return calculateGenericCost(validVolume, validDistance, mode, fuelType, aiEnhanced);
+      result = calculateGenericCost(validVolume, validDistance, mode, fuelType, aiEnhanced);
     }
+
+    return { ...result, fuelPrice };
     
   } catch (error) {
     console.error('❌ Enhanced cost calculation error:', error);
     return {
       cost: calculateRealisticFallback(volume, distance, mode, fuelType),
       aiEnhanced: false,
-      aiFactors: { error: error.message }
+      aiFactors: { error: error.message },
+      fuelPrice
     };
   }
 }
@@ -1076,8 +1080,8 @@ async function generateRouteOptions(routeData) {
         const transportCost = typeof costResult === 'object' ? costResult.cost : costResult;
         const aiEnhanced = typeof costResult === 'object' ? costResult.aiEnhanced : false;
         
-        // Get commodity cost
-        const commodityInfo = getCommodityCost(fuelType, volume);
+        // Get commodity cost using dynamic fuel price
+        const commodityInfo = getCommodityCost(fuelType, volume, costResult.fuelPrice);
         const allInCost = transportCost + commodityInfo.totalCost;
         
         // Format route option
@@ -1237,7 +1241,7 @@ async function generateFallbackRouteOptions(routeData) {
       const costResult = await calculateBasicCost(volume, distance, mode, fuelType);
       const transportCost = typeof costResult === 'object' ? costResult.cost : costResult;
       
-      const commodityInfo = getCommodityCost(fuelType, volume);
+      const commodityInfo = getCommodityCost(fuelType, volume, costResult.fuelPrice);
       const allInCost = transportCost + commodityInfo.totalCost;
       
       options.push({
@@ -1390,9 +1394,6 @@ async function generateTruckOptions(volume, baseDistance, fuelType) {
   const distance = typeof baseDistance === 'number' ? baseDistance : 
                    typeof baseDistance === 'string' ? parseInt(baseDistance) : 1000;
   
-  // ✅ GET COMMODITY COST for all-in pricing
-  const commodityInfo = getCommodityCost(fuelType, volume);
-  console.log(`💰 Commodity cost for route options: $${commodityInfo.totalCost}`);
   
   // Single truck option
   if (volume <= maxTruckCapacity) {
@@ -1405,6 +1406,7 @@ async function generateTruckOptions(volume, baseDistance, fuelType) {
     const aiFactors = typeof costResult === 'object' ? costResult.aiFactors : null;
     
     // ✅ CALCULATE ALL-IN COST (Transport + Commodity)
+    const commodityInfo = getCommodityCost(fuelType, volume, costResult.fuelPrice);
     const allInCost = transportCost + commodityInfo.totalCost;
     
     options.push({
@@ -1466,6 +1468,7 @@ async function generateTruckOptions(volume, baseDistance, fuelType) {
     const aiFactors = typeof costResult === 'object' ? costResult.aiFactors : null;
     
     // ✅ CALCULATE ALL-IN COST (Transport + Commodity)
+    const commodityInfo = getCommodityCost(fuelType, volume, costResult.fuelPrice);
     const allInCost = transportCostWithPremium + commodityInfo.totalCost;
     
     options.push({
@@ -1519,7 +1522,7 @@ async function generateRailOption(routeData, baseDistance) {
     const discountedTransportCost = transportCost.cost * 0.9;
     
     // ✅ ADD COMMODITY COST
-    const commodityInfo = getCommodityCost(fuelType, volume);
+    const commodityInfo = getCommodityCost(fuelType, volume, transportCost.fuelPrice);
     const allInCost = discountedTransportCost + commodityInfo.totalCost;
     
     return {
@@ -1582,7 +1585,7 @@ async function generateShipOption(routeData, baseDistance) {
     const aiFactors = typeof costResult === 'object' ? costResult.aiFactors : null;
     
     // ✅ ADD COMMODITY COST
-    const commodityInfo = getCommodityCost(fuelType, volume);
+    const commodityInfo = getCommodityCost(fuelType, volume, costResult.fuelPrice);
     const allInCost = transportCost + commodityInfo.totalCost;
     
     return {
@@ -1643,7 +1646,7 @@ async function generatePipelineOption(routeData, baseDistance) {
     const transportCost = transportCostResult.cost || transportCostResult;
     
     // ✅ ADD COMMODITY COST
-    const commodityInfo = getCommodityCost(fuelType, volume);
+    const commodityInfo = getCommodityCost(fuelType, volume, transportCostResult.fuelPrice);
     const allInCost = transportCost + commodityInfo.totalCost;
     
     return {
