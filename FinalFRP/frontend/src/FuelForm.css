@@ -9,7 +9,9 @@
 .calculator-container {
   max-width: 1000px;
   margin: 0 auto;
-  background: white;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+  color: white;
+  font-family: inherit;
   padding: 4rem;
   border-radius: 16px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
@@ -22,14 +24,14 @@
 
 .calculator-header h2 {
   font-size: 2.5rem;
-  color: #1f2937;
+  color: #ffffff;
   margin-bottom: 1rem;
   font-weight: 700;
 }
 
 .calculator-header p {
   font-size: 1.2rem;
-  color: #6b7280;
+  color: #e5e7eb;
   margin-bottom: 2rem;
 }
 
@@ -72,7 +74,7 @@
 
 .form-group label {
   font-weight: 600;
-  color: #374151;
+  color: #f3f4f6;
   margin-bottom: 0.5rem;
   font-size: 1rem;
 }
@@ -243,10 +245,11 @@
 
 .ai-insights {
   margin-top: 2rem;
-  padding: 1.5rem;
-  background: white;
+  padding: 2rem;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
   border-radius: 0.75rem;
   border: 1px solid #e5e7eb;
+  white-space: pre-line;
 }
 
 .ai-insights h4 {
