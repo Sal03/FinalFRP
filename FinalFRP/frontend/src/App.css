@@ -296,7 +296,8 @@
 /* ✅ UPDATED: Calculate button styles for the new functionality */
 .calculate-with-ai-btn {
   width: 100%;
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  /* Updated gradient button styling */
+  background: linear-gradient(90deg, #6366f1 0%, #06b6d4 100%);
   color: white;
   border: none;
   padding: 1rem 2rem;
@@ -315,13 +316,15 @@
 
 .calculate-with-ai-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px -3px rgba(59, 130, 246, 0.4);
+  background: linear-gradient(90deg, #4f46e5 0%, #0891b2 100%);
+  box-shadow: 0 10px 25px -3px rgba(99, 102, 241, 0.45);
 }
 
 .calculate-with-ai-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.7;
   cursor: not-allowed;
   transform: none;
+  box-shadow: none;
 }
 
 .button-text {
@@ -862,13 +865,15 @@ body {
 /* Enhanced Calculator Section */
 #calculator {
   padding: 4rem 0;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  /* Softer gradient background for the calculator section */
+  background: linear-gradient(120deg, #f0f9ff 0%, #e0f2fe 100%);
 }
 
 /* Enhanced FuelRouteApp Styling */
 .min-h-screen {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  /* Match the calculator section's soft gradient */
+  background: linear-gradient(120deg, #f0f9ff 0%, #e0f2fe 100%);
   padding: 2rem 1rem;
 }
 
@@ -1429,7 +1434,8 @@ body {
 /* Custom Green Button Override */
 .calculate-with-ai-btn {
   width: 100% !important;
-  background: #16a34a !important;
+  /* Vibrant gradient button for better visual appeal */
+  background: linear-gradient(90deg, #6366f1 0%, #06b6d4 100%) !important;
   color: white !important;
   padding: 1rem 1.5rem !important;
   border: none !important;
@@ -1440,7 +1446,7 @@ body {
   letter-spacing: 0.05em !important;
   cursor: pointer !important;
   transition: all 0.3s ease !important;
-  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3) !important;
+  box-shadow: 0 3px 10px rgba(99, 102, 241, 0.4) !important;
   margin-top: 1.5rem !important;
   display: flex !important;
   flex-direction: column !important;
@@ -1449,8 +1455,8 @@ body {
 }
 
 .calculate-with-ai-btn:hover:not(:disabled) {
-  background: #15803d !important;
-  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.4) !important;
+  background: linear-gradient(90deg, #4f46e5 0%, #0891b2 100%) !important;
+  box-shadow: 0 6px 15px rgba(99, 102, 241, 0.45) !important;
   transform: translateY(-1px) !important;
 }
 
@@ -1459,6 +1465,7 @@ body {
   cursor: not-allowed !important;
   transform: none !important;
   box-shadow: none !important;
+  opacity: 0.7 !important;
 }
 
 .calculate-with-ai-btn .button-text {
