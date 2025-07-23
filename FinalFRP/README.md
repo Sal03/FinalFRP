@@ -11,3 +11,4 @@
 - 📊 Estimate transit duration based on real-world constraints
 - 🤖 Integrate with AI models via Ollama for deeper insights
 - ⚙️ Compare routes and optimize decision-making
+- 🎯 Choose lowest cost or shortest distance preference

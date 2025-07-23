@@ -11,7 +11,8 @@ const FuelForm = ({ backendAPI, apiStatus }) => {
     intermediateHub: '',
     destination: '',
     transportMode1: 'truck',
-    transportMode2: 'ship'
+    transportMode2: 'ship',
+    preference: 'cost'
   });
 
   const [showResults, setShowResults] = useState(false);
@@ -86,7 +87,8 @@ const FuelForm = ({ backendAPI, apiStatus }) => {
         destination: formData.destination,
         intermediateHub: formData.intermediateHub || null,
         transportMode1: formData.transportMode1,
-        transportMode2: formData.transportMode2
+        transportMode2: formData.transportMode2,
+        preference: formData.preference
       };
 
       if (backendAPI && backendAPI.isConnected && apiStatus === 'connected') {
@@ -297,15 +299,30 @@ const FuelForm = ({ backendAPI, apiStatus }) => {
 
             <div className="form-group">
               <label>Transport Mode (B → C)</label>
-              <select 
-                name="transportMode2" 
+              <select
+                name="transportMode2"
                 value={formData.transportMode2}
-                onChange={handleChange} 
+                onChange={handleChange}
                 required
               >
                 {transportModes.map(mode => (
                   <option key={mode.value} value={mode.value}>{mode.label}</option>
                 ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Optimization Preference */}
+          <div className="form-row">
+            <div className="form-group">
+              <label>Optimization Preference</label>
+              <select
+                name="preference"
+                value={formData.preference}
+                onChange={handleChange}
+              >
+                <option value="cost">Lowest Cost</option>
+                <option value="distance">Shortest Distance</option>
               </select>
             </div>
           </div>

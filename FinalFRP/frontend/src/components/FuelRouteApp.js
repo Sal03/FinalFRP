@@ -65,6 +65,7 @@ const FuelRouteApp = ({ backendAPI, apiStatus }) => {
     intermediateHub: '',
     transportMode1: 'truck',
     transportMode2: 'truck',
+    preference: 'cost',
   });
 
   // App state
@@ -730,7 +731,8 @@ const validateLocationBasic = (location, fieldName) => {
         ...formData,
         volume: volumeInTonnes, // Always send in tonnes to backend
         volumeUnit: 'tonnes', // Backend expects tonnes
-        requestType: mode // 'options' for multiple routes, 'single' for best recommendation
+        requestType: mode, // 'options' for multiple routes, 'single' for best recommendation
+        preference: formData.preference
       };
 
       console.log(`Sending ${mode} request:`, requestData);
@@ -786,7 +788,8 @@ const validateLocationBasic = (location, fieldName) => {
         volume: volumeInTonnes,
         volumeUnit: 'tonnes',
         requestType: 'single', // This tells backend to return detailed calculation
-        selectedRoute: selectedRouteOption
+        selectedRoute: selectedRouteOption,
+        preference: formData.preference
       };
 
       console.log('Requesting detailed calculation:', requestData);
@@ -1142,6 +1145,22 @@ const validateLocationBasic = (location, fieldName) => {
                     <strong>Get Results:</strong> View all available route options with AI recommendations
                   </div>
                 </div>
+              </div>
+
+              {/* Optimization Preference */}
+              <div className="bg-gray-50 p-3 rounded-md mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Optimization Preference
+                </label>
+                <select
+                  name="preference"
+                  value={formData.preference}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="cost">Lowest Cost</option>
+                  <option value="distance">Shortest Distance</option>
+                </select>
               </div>
 
               {/* Submit Button */}

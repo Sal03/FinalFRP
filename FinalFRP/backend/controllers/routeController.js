@@ -834,11 +834,18 @@ async function generateRouteOptions(routeData) {
       }
     }
     
-    // Sort by cost and feasibility
+    // Sort options by user preference
     formattedOptions.sort((a, b) => {
       // Prioritize non-fallback routes
       if (a.fallback !== b.fallback) return a.fallback - b.fallback;
-      // Then by cost
+
+      if (routeData.preference === 'distance') {
+        const distA = typeof a.distance === 'number' ? a.distance : Number.MAX_VALUE;
+        const distB = typeof b.distance === 'number' ? b.distance : Number.MAX_VALUE;
+        return distA - distB;
+      }
+
+      // Default to cost
       return a.estimatedCost - b.estimatedCost;
     });
     
@@ -1439,7 +1446,8 @@ async function getAIRouteRecommendation(routeOptions, routeData) {
       risk: route.riskLevel || 'medium'
     }));
     
-    const prompt = `Analyze these fuel transportation route options for ${volume} tonnes of ${fuelType} from ${origin} to ${destination}:
+    const preferenceText = routeData.preference === 'distance' ? 'shortest distance' : 'lowest cost';
+    const prompt = `Analyze these fuel transportation route options for ${volume} tonnes of ${fuelType} from ${origin} to ${destination}. The user wants the ${preferenceText} option:
 
 ${JSON.stringify(routeSummary, null, 2)}
 
@@ -1489,10 +1497,12 @@ Provide recommendation in this exact JSON format (no extra text):
       } catch (secondError) {
         console.error('❌ Second AI recommendation parse failed');
         // Return default recommendation
+        const fallbackRoute = routeOptions[0]?.name || "First Option";
+        const prefReason = routeData.preference === 'distance' ? 'shortest distance' : 'lowest cost';
         recommendation = {
-          recommended_route: routeOptions[0]?.name || "First Option",
-          reason: "AI analysis unavailable, selecting lowest cost option",
-          cost_benefit: "Cost optimized selection"
+          recommended_route: fallbackRoute,
+          reason: `AI analysis unavailable, selecting ${prefReason} option`,
+          cost_benefit: routeData.preference === 'distance' ? 'Distance optimized selection' : 'Cost optimized selection'
         };
       }
     }
@@ -1502,10 +1512,12 @@ Provide recommendation in this exact JSON format (no extra text):
     
   } catch (error) {
     console.error('❌ AI route recommendation failed:', error.message);
+    const fallbackRoute = routeOptions[0]?.name || "First Option";
+    const prefReason = routeData.preference === 'distance' ? 'shortest distance' : 'lowest cost';
     return {
-      recommended_route: routeOptions[0]?.name || "First Option",
-      reason: "AI analysis unavailable, selecting lowest cost option",
-      cost_benefit: "Default cost optimization"
+      recommended_route: fallbackRoute,
+      reason: `AI analysis unavailable, selecting ${prefReason} option`,
+      cost_benefit: routeData.preference === 'distance' ? 'Distance optimized selection' : 'Default cost optimization'
     };
   }
 }
@@ -1542,7 +1554,8 @@ const calculateCost = async (req, res) => {
       origin: origin.trim(),
       destination: destination.trim(),
       transportMode1: req.body.transportMode1 || 'truck',
-      transportMode2: req.body.transportMode2 || null
+      transportMode2: req.body.transportMode2 || null,
+      preference: req.body.preference === 'distance' ? 'distance' : 'cost'
     };
 
     // Check if OpenAI is available for enhanced processing
