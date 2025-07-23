@@ -2,6 +2,9 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+### Cost Comparison Chart
+After running a calculation, a bar chart compares the total cost for each returned route. Make sure `react-chartjs-2` and `chart.js` are installed with `npm install`.
+
 ## Available Scripts
 
 In the project directory, you can run:
