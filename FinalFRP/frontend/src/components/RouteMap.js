@@ -117,6 +117,47 @@ const generateCurvedPath = (start, end, transportMode) => {
   return waypoints;
 };
 
+// Decode an encoded polyline string into an array of [lat, lng] coordinates
+const decodePolyline = (encoded) => {
+  if (!encoded) return [];
+
+  let index = 0;
+  let lat = 0;
+  let lng = 0;
+  const coordinates = [];
+
+  while (index < encoded.length) {
+    let b;
+    let shift = 0;
+    let result = 0;
+
+    do {
+      b = encoded.charCodeAt(index++) - 63;
+      result |= (b & 0x1f) << shift;
+      shift += 5;
+    } while (b >= 0x20);
+
+    const deltaLat = (result & 1) ? ~(result >> 1) : (result >> 1);
+    lat += deltaLat;
+
+    shift = 0;
+    result = 0;
+
+    do {
+      b = encoded.charCodeAt(index++) - 63;
+      result |= (b & 0x1f) << shift;
+      shift += 5;
+    } while (b >= 0x20);
+
+    const deltaLng = (result & 1) ? ~(result >> 1) : (result >> 1);
+    lng += deltaLng;
+
+    coordinates.push([lat * 1e-5, lng * 1e-5]);
+  }
+
+  return coordinates;
+};
+
 // Major US ports and hubs with coordinates
 const locations = {
   'Houston, TX': [29.7604, -95.3698],
@@ -204,22 +245,30 @@ const RouteMap = ({
 useEffect(() => {
   if (routeOptions.length > 0) {
     const processedRoutes = routeOptions.map((route, index) => {
-      // Use waypoints from backend if available
       let routePath = [];
-      
-      if (route.waypoints && route.waypoints.length > 0) {
-        // Use backend-provided waypoints for realistic routing
+
+      // Prefer explicit coordinates from the backend
+      if (Array.isArray(route.routePath) && route.routePath.length >= 2) {
+        if (typeof route.routePath[0] === 'string') {
+          routePath = route.routePath
+            .map(location => locations[location])
+            .filter(coords => coords);
+        } else {
+          routePath = route.routePath;
+        }
+      } else if (route.polyline) {
+        // Decode any encoded polyline provided
+        routePath = decodePolyline(route.polyline);
+      } else if (route.waypoints && route.waypoints.length > 0) {
+        // Backwards compatibility with old waypoint format
         routePath = route.waypoints;
-      } else if (route.routePath && route.routePath.length > 2) {
-        // Multi-point route from backend
-        routePath = route.routePath
-          .map(location => locations[location])
-          .filter(coords => coords);
-      } else {
-        // Simple point-to-point with curve
+      }
+
+      // Fallback to a simple curved path if nothing else is available
+      if (routePath.length === 0) {
         const originCoords = locations[route.routePath?.[0] || origin];
         const destCoords = locations[route.routePath?.[route.routePath.length - 1] || destination];
-        
+
         if (originCoords && destCoords) {
           const primaryMode = route.transportModes?.[0] || 'truck';
           routePath = generateCurvedPath(originCoords, destCoords, primaryMode);
