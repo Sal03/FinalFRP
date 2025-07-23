@@ -4,6 +4,7 @@ import { MapContainer, TileLayer, Marker, Popup, Polyline, LayersControl, Featur
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './RouteMap.css';
+import coastalRoutes from '../services/coastalRoutes';
 
 // Fix default markers (Leaflet + React issue)
 delete L.Icon.Default.prototype._getIconUrl;
@@ -159,6 +160,94 @@ const decodePolyline = (encoded) => {
   return coordinates;
 };
 
+// Retrieve coastal waypoints from the dataset when available
+const getCoastalWaypoints = (origin, destination) => {
+  const key = `${origin}-${destination}`;
+  const reverseKey = `${destination}-${origin}`;
+
+  if (coastalRoutes[key] && coastalRoutes[key].waypoints.length > 0) {
+    return coastalRoutes[key].waypoints;
+  }
+  if (coastalRoutes[reverseKey] && coastalRoutes[reverseKey].waypoints.length > 0) {
+    return [...coastalRoutes[reverseKey].waypoints].reverse();
+  }
+  return null;
+};
+
+// Generic coastal paths used when no specific route exists
+const coastalPaths = {
+  west: [
+    [32.7157, -117.1611],
+    [33.7292, -118.2620],
+    [36.6002, -121.8947],
+    [39.1612, -123.7881],
+    [43.3504, -124.3738],
+    [46.2816, -124.0833],
+    [47.6062, -122.3321]
+  ],
+  gulf: [
+    [29.7050, -95.0030],
+    [29.4724, -94.0572],
+    [29.9511, -90.0715],
+    [30.6944, -88.0431],
+    [27.9506, -82.4572]
+  ],
+  east: [
+    [25.7617, -80.1918],
+    [30.3322, -81.6557],
+    [32.0835, -81.0998],
+    [33.8734, -78.8808],
+    [35.2271, -75.5449],
+    [36.8468, -76.2852],
+    [40.7128, -74.0060],
+    [42.3601, -71.0589]
+  ]
+};
+
+// Build a simple coastal fallback between two coordinates
+const generateCoastalFallback = (start, end) => {
+  if (!start || !end) return [];
+
+  const paths = Object.values(coastalPaths);
+
+  const calcDist = (a, b) => L.latLng(a[0], a[1]).distanceTo(L.latLng(b[0], b[1]));
+
+  let bestPath = paths[0];
+  let bestScore = Infinity;
+
+  paths.forEach(path => {
+    const score = calcDist(start, path[0]) + calcDist(end, path[path.length - 1]);
+    if (score < bestScore) {
+      bestScore = score;
+      bestPath = path;
+    }
+  });
+
+  const nearestIndex = (coords, path) => {
+    let idx = 0;
+    let min = Infinity;
+    path.forEach((p, i) => {
+      const d = calcDist(coords, p);
+      if (d < min) {
+        min = d;
+        idx = i;
+      }
+    });
+    return idx;
+  };
+
+  const startIdx = nearestIndex(start, bestPath);
+  const endIdx = nearestIndex(end, bestPath);
+
+  let slice = bestPath.slice(Math.min(startIdx, endIdx), Math.max(startIdx, endIdx) + 1);
+  if (startIdx > endIdx) slice = slice.reverse();
+
+  slice[0] = start;
+  slice[slice.length - 1] = end;
+
+  return slice;
+};
+
 // Major US ports and hubs with coordinates
 const locations = {
   'Houston, TX': [29.7604, -95.3698],
@@ -265,13 +354,25 @@ useEffect(() => {
         routePath = route.waypoints;
       }
 
-      // Fallback to a simple curved path if nothing else is available
+      // Fallback handling for missing waypoints
       if (routePath.length === 0) {
         const originCoords = locations[route.routePath?.[0] || origin];
         const destCoords = locations[route.routePath?.[route.routePath.length - 1] || destination];
 
-        if (originCoords && destCoords) {
-          const primaryMode = route.transportModes?.[0] || 'truck';
+        const primaryMode = route.transportModes?.[0] || 'truck';
+
+        if (primaryMode === 'ship') {
+          // Try to use predefined coastal waypoints
+          routePath = getCoastalWaypoints(origin, destination) || [];
+
+          // If none available, generate a generic coastal fallback
+          if (routePath.length === 0 && originCoords && destCoords) {
+            routePath = generateCoastalFallback(originCoords, destCoords);
+          }
+        }
+
+        // Final fallback to curved path
+        if (routePath.length === 0 && originCoords && destCoords) {
           routePath = generateCurvedPath(originCoords, destCoords, primaryMode);
         }
       }
