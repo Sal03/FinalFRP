@@ -2759,14 +2759,6 @@ async function generateMultiModalOptionsWithAI(routeData, baseDistance) {
 }
 
 module.exports = {
-  calculateCost: require('./routeController').calculateCost, // Use existing implementation
-  optimizeRoute: require('./routeController').optimizeRoute,
-  calculateBasicCost: require('./routeController').calculateBasicCost,
-  calculateDistance,
-  calculateMultiModalCost,
-  validateNumber,
-  getRouteHistory: require('./routeController').getRouteHistory,
-  generateRouteOptions,
   calculateCost,
   optimizeRoute,
   calculateBasicCost,
