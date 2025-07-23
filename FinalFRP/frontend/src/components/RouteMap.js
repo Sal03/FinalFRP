@@ -14,26 +14,27 @@ L.Icon.Default.mergeOptions({
 });
 
 // Custom icons for different transport modes
-const createCustomIcon = (color, symbol) => {
+const createCustomIcon = (color, symbol, size = 30) => {
+  const fontSize = (size * 0.53).toFixed(2);
   return L.divIcon({
     className: 'custom-div-icon',
     html: `<div style="
       background-color: ${color};
-      width: 30px;
-      height: 30px;
+      width: ${size}px;
+      height: ${size}px;
       border-radius: 50%;
       border: 3px solid white;
       box-shadow: 0 2px 4px rgba(0,0,0,0.3);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
+      font-size: ${fontSize}px;
       color: white;
       font-weight: bold;
     ">${symbol}</div>`,
-    iconSize: [30, 30],
-    iconAnchor: [15, 15],
-    popupAnchor: [0, -15]
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+    popupAnchor: [0, -size / 2]
   });
 };
 
@@ -405,26 +406,28 @@ useEffect(() => {
                       const isOrigin = index === 0;
                       const isDestination = index === route.routePath.length - 1;
                       const isWaypoint = !isOrigin && !isDestination;
-                      
+
                       let markerColor = '#6b7280'; // Default gray
                       let markerSymbol = '📍';
-                      
+                      let markerSize = 30;
+
                       if (isOrigin) {
                         markerColor = '#10b981'; // Green
-                        markerSymbol = '🟢';
+                        markerSymbol = '📍';
                       } else if (isDestination) {
-                        markerColor = '#ef4444'; // Red  
-                        markerSymbol = '🔴';
+                        markerColor = '#ef4444'; // Red
+                        markerSymbol = '📍';
                       } else if (isWaypoint) {
                         markerColor = '#f59e0b'; // Yellow
                         markerSymbol = '🟡';
+                        markerSize = 15;
                       }
 
                       return (
                         <Marker
                           key={`${route.id}-marker-${index}`}
                           position={coords}
-                          icon={createCustomIcon(markerColor, markerSymbol)}
+                          icon={createCustomIcon(markerColor, markerSymbol, markerSize)}
                         >
                           <Popup>
                             <div className="text-sm">
