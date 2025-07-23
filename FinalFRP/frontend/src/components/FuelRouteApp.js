@@ -1,6 +1,7 @@
 //frontend/src/components/FuelRouteApp.js - ERROR FIXES ONLY
 import React, { useState, useEffect } from 'react';
 import RouteMap from './RouteMap';
+import CostComparisonChart from './CostComparisonChart';
 import './RouteMap.css';
 
 // API Service - inlined to avoid external imports
@@ -1363,6 +1364,12 @@ const validateLocationBasic = (location, fieldName) => {
                       </div>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {result?.routeOptions && (
+                <div className="bg-white rounded-lg shadow-md p-6">
+                  <CostComparisonChart routes={result.routeOptions} />
                 </div>
               )}
 
