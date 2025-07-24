@@ -30,10 +30,17 @@ const Login = () => {
       
       if (isLoginMode) {
         // Login existing user
-        const user = storedUsers.find(u => u.name === formData.name && u.password === formData.password);
+        let user = storedUsers.find(u => u.name === formData.name && u.password === formData.password);
         if (user) {
-            setMessage(`Welcome back, ${user.name}! Redirecting to Hub...`);
+            if (user.searchCount === undefined) user.searchCount = 0;
+            if (user.isSubscribed === undefined) user.isSubscribed = false;
+            const idx = storedUsers.findIndex(u => u.id === user.id);
+            if (idx > -1) {
+              storedUsers[idx] = user;
+              localStorage.setItem('fuelrouteUsers', JSON.stringify(storedUsers));
+            }
             localStorage.setItem('currentUser', JSON.stringify(user));
+            setMessage(`Welcome back, ${user.name}! Redirecting to Hub...`);
             setTimeout(() => {
               window.location.href = '/how-it-works';
             }, 2000);
@@ -47,7 +54,7 @@ const Login = () => {
           setMessage('User already exists! Please use the Login option or try a different name/email.');
         } else {
           // Register new user
-          const newUser = { ...formData, id: Date.now() };
+          const newUser = { ...formData, id: Date.now(), searchCount: 0, isSubscribed: false };
           storedUsers.push(newUser);
           localStorage.setItem('fuelrouteUsers', JSON.stringify(storedUsers));
           localStorage.setItem('currentUser', JSON.stringify(newUser));

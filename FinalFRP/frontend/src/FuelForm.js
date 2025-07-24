@@ -74,6 +74,12 @@ const FuelForm = ({ backendAPI, apiStatus }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+    if (currentUser && !currentUser.isSubscribed && currentUser.searchCount >= 3) {
+      alert('Free searches exhausted. Please subscribe to continue.');
+      window.location.href = '/subscribe';
+      return;
+    }
     setIsCalculating(true);
     setShowResults(false);
     
@@ -107,6 +113,16 @@ const FuelForm = ({ backendAPI, apiStatus }) => {
         };
 
         setResults(calculationResults);
+        if (currentUser) {
+          currentUser.searchCount = (currentUser.searchCount || 0) + 1;
+          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+          const allUsers = JSON.parse(localStorage.getItem('fuelrouteUsers') || '[]');
+          const idx = allUsers.findIndex(u => u.id === currentUser.id);
+          if (idx > -1) {
+            allUsers[idx] = currentUser;
+            localStorage.setItem('fuelrouteUsers', JSON.stringify(allUsers));
+          }
+        }
         
         if (backendAPI.refreshHistory) {
           await backendAPI.refreshHistory();
@@ -138,6 +154,16 @@ const FuelForm = ({ backendAPI, apiStatus }) => {
         };
 
         setResults(calculationResults);
+        if (currentUser) {
+          currentUser.searchCount = (currentUser.searchCount || 0) + 1;
+          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+          const allUsers = JSON.parse(localStorage.getItem('fuelrouteUsers') || '[]');
+          const idx = allUsers.findIndex(u => u.id === currentUser.id);
+          if (idx > -1) {
+            allUsers[idx] = currentUser;
+            localStorage.setItem('fuelrouteUsers', JSON.stringify(allUsers));
+          }
+        }
       }
       
       setShowResults(true);
