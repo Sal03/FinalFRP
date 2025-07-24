@@ -1,4 +1,4 @@
-const { getDistance, isPipelineAvailable } = require('./distanceMatrix');
+const { getDistance } = require('./distanceMatrix');
 
 class PipelineService {
   constructor() {
