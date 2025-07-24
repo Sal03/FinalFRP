@@ -450,6 +450,11 @@ useEffect(() => {
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
+            <TileLayer
+              attribution='&copy; <a href="https://www.openseamap.org">OpenSeaMap</a> contributors'
+              url="https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png"
+              opacity={0.7}
+            />
 
             <LayersControl position="topright">
               {/* Route Layers */}
