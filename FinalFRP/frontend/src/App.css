@@ -293,6 +293,59 @@
   border: 1px solid rgba(251, 191, 36, 0.3);
 }
 
+/* ✅ NEW: Resources Section */
+.resources {
+  padding: 4rem 0;
+  background: linear-gradient(135deg, #ecfeff 0%, #dbeafe 100%);
+}
+
+.resources-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.resources h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
+
+.resources-subtitle {
+  text-align: center;
+  font-size: 1.125rem;
+  color: #475569;
+  margin-bottom: 2rem;
+}
+
+.resources-list {
+  list-style: none;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.resources-list li {
+  position: relative;
+  padding: 0.5rem 0 0.5rem 1.25rem;
+  border-bottom: 1px solid #e2e8f0;
+  color: #475569;
+  font-size: 0.95rem;
+}
+
+.resources-list li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: #3b82f6;
+}
+
+.resources-list li:last-child {
+  border-bottom: none;
+}
+
 /* ✅ UPDATED: Calculate button styles for the new functionality */
 .calculate-with-ai-btn {
   width: 100%;
@@ -454,19 +507,27 @@
   .features {
     padding: 3rem 0;
   }
-  
+
   .features h2 {
     font-size: 2rem;
   }
-  
+
   .solutions {
     padding: 3rem 0;
   }
-  
+
   .solutions h2 {
     font-size: 2rem;
   }
-  
+
+  .resources {
+    padding: 3rem 0;
+  }
+
+  .resources h2 {
+    font-size: 2rem;
+  }
+
   .hero-stats {
     grid-template-columns: 1fr;
     gap: 1.5rem;
