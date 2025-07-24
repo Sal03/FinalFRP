@@ -834,6 +834,11 @@ const validateLocationBasic = (location, fieldName) => {
     return new Date(dateString).toLocaleString();
   };
 
+  const formatTrucks = (count) => {
+    if (!count) return '';
+    return count === 1 ? '1 truck' : `${count} trucks`;
+  };
+
   const currentApiStatus = apiStatus || localApiStatus;
 
   // API Status indicator with AI enhancement
@@ -1387,6 +1392,9 @@ const validateLocationBasic = (location, fieldName) => {
                     <div className="bg-blue-50 p-3 rounded mb-4">
                       <h4 className="font-medium text-blue-800">{result.selectedRoute.name}</h4>
                       <p className="text-blue-700 text-sm">{result.selectedRoute.description}</p>
+                      { (result.selectedRoute.trucksNeeded || result.calculation?.trucksNeeded) && (
+                        <p className="text-blue-700 text-sm">🚚 {formatTrucks(result.selectedRoute.trucksNeeded || result.calculation.trucksNeeded)}</p>
+                      )}
                     </div>
                   )}
 
@@ -1577,6 +1585,12 @@ const validateLocationBasic = (location, fieldName) => {
                         <strong>Distance:</strong><br />
                         {result.data.distance} miles
                       </div>
+                      {result.data.trucksNeeded && (
+                        <div>
+                          <strong>Trucks Needed:</strong><br />
+                          {formatTrucks(result.data.trucksNeeded)}
+                        </div>
+                      )}
                     </div>
 
                     {/* Cost Breakdown */}
