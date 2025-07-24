@@ -238,9 +238,106 @@ function App() {
         </div>
       </section>
 
+      {/* Features Section */}
+      <section id="features" className="features">
+        <div className="features-container">
+          <h2>Key Features</h2>
+          <p className="features-subtitle">Tools to simplify alternative fuel logistics.</p>
+          <div className="features-grid">
+            <div className="feature-card">
+              <div className="feature-icon">🧮</div>
+              <h3>Smart Cost Calculator</h3>
+              <p>Generate AI-powered estimates for any route.</p>
+              <ul>
+                <li>Multi-modal routing</li>
+                <li>Real-time distance lookup</li>
+              </ul>
+            </div>
+            <div className="feature-card">
+              <div className="feature-icon">📈</div>
+              <h3>Route History</h3>
+              <p>Review previous calculations and compare costs.</p>
+              <ul>
+                <li>Save frequent routes</li>
+                <li>Spot cost trends</li>
+              </ul>
+            </div>
+            <div className="feature-card">
+              <div className="feature-icon">🔗</div>
+              <h3>API Access</h3>
+              <p>Integrate fuel cost data into your own tools.</p>
+              <ul>
+                <li>RESTful endpoints</li>
+                <li>JSON responses</li>
+              </ul>
+            </div>
+            <div className="feature-card">
+              <div className="feature-icon">🤖</div>
+              <h3>AI Insights</h3>
+              <p>Optimization tips based on market conditions.</p>
+              <ul>
+                <li>Market analysis</li>
+                <li>Efficiency suggestions</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Solutions Section */}
+      <section id="solutions" className="solutions">
+        <div className="solutions-container">
+          <h2>Solutions</h2>
+          <p className="solutions-subtitle">Designed for every stakeholder in the fuel supply chain.</p>
+          <div className="solutions-grid">
+            <div className="solution-card">
+              <h3>Logistics Teams</h3>
+              <p>Manage complex shipments with confidence.</p>
+              <div className="solution-stats">
+                <span>Truck</span>
+                <span>Rail</span>
+                <span>Ship</span>
+              </div>
+            </div>
+            <div className="solution-card">
+              <h3>Energy Producers</h3>
+              <p>Plan efficient hydrogen, methanol and ammonia delivery.</p>
+              <div className="solution-stats">
+                <span>Hydrogen</span>
+                <span>Methanol</span>
+                <span>Ammonia</span>
+              </div>
+            </div>
+            <div className="solution-card">
+              <h3>Government Agencies</h3>
+              <p>Evaluate alternative fuel corridors and policies.</p>
+              <div className="solution-stats">
+                <span>Policy</span>
+                <span>Compliance</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Resources Section */}
+      <section id="resources" className="resources">
+        <div className="resources-container">
+          <h2>Resources</h2>
+          <p className="resources-subtitle">Guides and data to power your decisions.</p>
+          <ul className="resources-list">
+            <li>Blog &amp; Insights</li>
+            <li>Transportation Guides</li>
+            <li>Research Papers</li>
+            <li>Case Studies</li>
+            <li>API Documentation</li>
+          </ul>
+        </div>
+      </section>
+
       {/* Calculator Section */}
       <section id="calculator">
-        <FuelRouteApp 
+        <FuelRouteApp
           backendAPI={backendAPI}
           apiStatus={apiStatus}
         />
