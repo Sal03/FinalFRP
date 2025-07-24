@@ -105,6 +105,7 @@ const HowItWorks = () => {
         <div className="navigation-links">
           <Link to="/" className="nav-link">🏠 Home</Link>
           <Link to="/" className="nav-link calculator-link">🧮 Calculator</Link>
+          <Link to="/subscribe" className="nav-link">💳 Subscription</Link>
         </div>
       </div>
 

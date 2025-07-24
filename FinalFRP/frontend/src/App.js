@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Login from './components/Login';
 import HowItWorks from './components/HowItWorks';
+import Subscription from './components/Subscription';
 import Support from './components/Support';
 import Help from './components/Help';
 import './App.css';
@@ -148,6 +149,7 @@ function App() {
         <Route path="/how-it-works" element={<HowItWorks />} />
         <Route path="/support" element={<Support />} />
         <Route path="/help" element={<Help />} />
+        <Route path="/subscribe" element={<Subscription />} />
         <Route path="/" element={
           <div className="App">
 
