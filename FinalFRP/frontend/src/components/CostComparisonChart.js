@@ -30,9 +30,25 @@ const CostComparisonChart = ({ routes = [] }) => {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
+    plugins: {
+      title: {
+        display: true,
+        text: 'Route Cost Comparison',
+      },
+    },
     scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Route Options',
+        },
+      },
       y: {
         beginAtZero: true,
+        title: {
+          display: true,
+          text: 'Total Cost (USD)',
+        },
         ticks: {
           callback: (value) => `$${value}`,
         },
@@ -43,6 +59,9 @@ const CostComparisonChart = ({ routes = [] }) => {
   return (
     <div style={{ height: '300px' }}>
       <Bar data={data} options={options} />
+      <p className="text-center text-gray-600 text-sm mt-2">
+        Bars show total project cost per route.
+      </p>
     </div>
   );
 };
