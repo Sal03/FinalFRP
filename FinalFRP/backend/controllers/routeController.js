@@ -147,8 +147,6 @@ async function calculateBasicCost(volume, distance, mode, fuelType) {
       result = calculateRailCost(validVolume, validDistance, fuelType, transportFactors, aiEnhanced);
     } else if (mode === 'ship') {
       result = calculateShipCost(validVolume, validDistance, fuelType, transportFactors, aiEnhanced);
-    } else if (mode === 'pipeline') {
-      result = calculatePipelineCost(validVolume, validDistance, fuelType, transportFactors, aiEnhanced);
     } else {
       // Fallback for unknown modes
       result = calculateGenericCost(validVolume, validDistance, mode, fuelType, aiEnhanced);
@@ -349,83 +347,6 @@ function calculateShipCost(volume, distance, fuelType, transportFactors, aiEnhan
   }
 }
 
-// ✅ FIXED: Pipeline cost calculation - ONLY change this function
-function calculatePipelineCost(volume, distance, fuelType, transportFactors, aiEnhanced) {
-  try {
-    console.log(`⛽ Pipeline calculation started: ${volume} tonnes, ${distance} miles, ${fuelType}`);
-    
-    // Validate inputs first
-    const validVolume = validateNumber(volume, 'pipeline volume', 1);
-    const validDistance = validateNumber(distance, 'pipeline distance', 100);
-    
-    // Check if pipeline is actually available for this route
-    if (!validDistance || validDistance <= 0) {
-      throw new Error('Pipeline not available for this route');
-    }
-    
-    let rate = 0.05; // Base rate per tonne-mile
-    let fuelMultiplier = getFuelMultiplier(fuelType, 'pipeline');
-    
-    console.log(`⛽ Initial values: rate=${rate}, fuelMultiplier=${fuelMultiplier}`);
-    
-    // Apply AI factors if available and valid
-    if (transportFactors && typeof transportFactors === 'object' && !transportFactors.error) {
-      console.log(`⛽ Applying AI transport factors:`, transportFactors);
-      
-      if (transportFactors.base_rate_per_mile && validateNumber(transportFactors.base_rate_per_mile)) {
-        const aiRate = transportFactors.base_rate_per_mile / 30; // Convert to per-tonne-mile
-        rate = Math.max(0.03, Math.min(0.08, aiRate));
-        console.log(`⛽ AI adjusted rate: ${rate}`);
-      }
-      
-      if (transportFactors.special_handling_multiplier && validateNumber(transportFactors.special_handling_multiplier)) {
-        fuelMultiplier *= transportFactors.special_handling_multiplier;
-        console.log(`⛽ AI adjusted fuel multiplier: ${fuelMultiplier}`);
-      }
-    }
-    
-    // Pipeline efficiency
-    const distanceMultiplier = 0.9;
-    
-    // Calculate costs step by step with validation
-    const baseTransportCost = validDistance * rate * validVolume * fuelMultiplier * distanceMultiplier;
-    const connectionFees = 500; // Fixed connection fee
-    const totalCost = baseTransportCost + connectionFees;
-    
-    // Validate final result
-    const validatedCost = validateNumber(totalCost, 'pipeline total cost', 1000);
-    
-    console.log(`⛽ Pipeline cost breakdown:`, {
-      validVolume,
-      validDistance,
-      rate: `$${rate.toFixed(4)}/tonne-mile`,
-      fuelMultiplier: fuelMultiplier.toFixed(2),
-      distanceMultiplier: distanceMultiplier.toFixed(2),
-      baseTransportCost: `$${baseTransportCost.toFixed(2)}`,
-      connectionFees: `$${connectionFees}`,
-      totalCost: `$${validatedCost.toFixed(2)}`,
-      aiEnhanced
-    });
-    
-    return {
-      cost: validatedCost,
-      aiEnhanced,
-      aiFactors: transportFactors || { note: 'Static pipeline pricing' }
-    };
-    
-  } catch (error) {
-    console.error('❌ Pipeline cost calculation error:', error);
-    
-    // Return explicit error instead of NaN
-    return {
-      cost: 0, // Return 0 instead of NaN
-      aiEnhanced: false,
-      aiFactors: { error: error.message, note: 'Pipeline not available for this route' },
-      error: error.message
-    };
-  }
-}
-
 // ✅ NEW: Generic cost calculation for unknown modes
 function calculateGenericCost(volume, distance, mode, fuelType, aiEnhanced) {
   try {
@@ -543,14 +464,6 @@ function calculateRealisticFallback(volume, distance, mode, fuelType) {
       const fuelMultiplier = fuelType === 'hydrogen' ? 1.4 : 1.2;
       const cost = validDistance * rate * validVolume * fuelMultiplier;
       console.log(`   Ship fallback: ${validDistance} miles × $${rate}/tonne-mile × ${validVolume} tonnes × ${fuelMultiplier} = $${cost.toFixed(2)}`);
-      return Math.round(cost * 100) / 100;
-      
-    } else if (mode === 'pipeline') {
-      // Realistic pipeline calculation
-      const rate = 0.05; // $0.05 per tonne-mile
-      const fuelMultiplier = fuelType === 'hydrogen' ? 1.3 : 1.1;
-      const cost = validDistance * rate * validVolume * fuelMultiplier;
-      console.log(`   Pipeline fallback: ${validDistance} miles × $${rate}/tonne-mile × ${validVolume} tonnes × ${fuelMultiplier} = $${cost.toFixed(2)}`);
       return Math.round(cost * 100) / 100;
       
     } else {
