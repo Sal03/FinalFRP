@@ -1,9 +1,8 @@
 const googleMapsService = require('./googleMapsService');
 const railNetworkService = require('./railNetworkService');
 const maritimeService = require('./maritimeService');
-const pipelineService = require('./pipelineService');
 // Import the distance matrix at the top
-const { getDistance, isPipelineAvailable } = require('./distanceMatrix');
+const { getDistance } = require('./distanceMatrix');
 
 // Replace the existing calculateDistance function:
 async function calculateDistance(origin, destination, transportMode = 'truck', fuelType = 'methanol') {
@@ -24,11 +23,6 @@ async function calculateDistance(origin, destination, transportMode = 'truck', f
         fuel_type: fuelType,
         route_path: [origin, destination]
       };
-    }
-    
-    // If not in matrix, check if pipeline was requested but not available
-    if (transportMode === 'pipeline') {
-      throw new Error(`Pipeline not available between ${origin} and ${destination}`);
     }
     
     // Fallback for routes not in our matrix
@@ -57,8 +51,7 @@ function calculateDurationHours(distance, transportMode) {
   const speeds = {
     truck: 55,    // mph average including stops
     rail: 25,     // mph freight rail average
-    ship: 17,     // mph cargo ship average
-    pipeline: 100 // mph equivalent flow rate
+    ship: 17      // mph cargo ship average
   };
   
   const speed = speeds[transportMode] || 30;
@@ -115,8 +108,7 @@ function estimateDistanceFromCoordinates(origin, destination, transportMode) {
   const modeMultipliers = {
     truck: 1.15,   // Highway routing
     rail: 1.25,    // Rail network routing
-    ship: 1.4,     // Coastal routing
-    pipeline: 0.95 // Direct underground
+    ship: 1.4      // Coastal routing
   };
   
   const adjustedDistance = Math.round(straightLineDistance * (modeMultipliers[transportMode] || 1.15));
@@ -132,8 +124,7 @@ class RoutingService {
     this.services = {
       truck: googleMapsService,
       rail: railNetworkService,
-      ship: maritimeService,
-      pipeline: pipelineService
+      ship: maritimeService
     };
     this.isAvailable = true;
     console.log('🗺️ Unified Routing Service initialized');
@@ -157,9 +148,6 @@ class RoutingService {
           break;
         case 'ship':
           route = await this.getShipRoute(origin, destination);
-          break;
-        case 'pipeline':
-          route = await this.getPipelineRoute(origin, destination, fuelType);
           break;
         default:
           throw new Error(`Unsupported transport mode: ${transportMode}`);
@@ -254,19 +242,7 @@ class RoutingService {
         console.warn(`Failed to get ${mode} route:`, error.message);
       }
     }
-    if (!preferredModes.includes('pipeline')) {
-      try {
-        const pipelineRoute = await this.getRoute(origin, destination, 'pipeline', fuelType);
-        routes.push({
-          mode: 'pipeline',
-          ...pipelineRoute,
-          feasible: this.assessFeasibility(pipelineRoute, fuelType, 'pipeline')
-        });
-      } catch (error) {
-        errors.push({ mode: 'pipeline', error: error.message });
-        console.log(`Pipeline not available: ${error.message}`);
-      }
-    }
+    // Pipeline routing disabled
     routes.sort((a, b) => {
       if (a.feasible !== b.feasible) return b.feasible - a.feasible;
       return a.distance_miles - b.distance_miles;
@@ -287,14 +263,12 @@ class RoutingService {
     const baseFeasibility = {
       truck: 0.8,
       rail: 0.9,
-      ship: 0.95,
-      pipeline: 0.7
+      ship: 0.95
     };
     score = baseFeasibility[mode] || 0.5;
     if (fuelType === 'hydrogen') {
       if (mode === 'truck') score *= 0.7;
       if (mode === 'ship') score *= 0.8;
-      if (mode === 'pipeline') score *= 0.3;
     } else if (fuelType === 'ammonia') {
       if (mode === 'truck') score *= 0.8;
       if (mode === 'rail') score *= 0.9;
@@ -313,8 +287,7 @@ class RoutingService {
     const modeMultipliers = {
       truck: 1.0,
       rail: 1.15,
-      ship: 1.8,
-      pipeline: 0.92
+      ship: 1.8
     };
     const distance = Math.round(baseDistance * (modeMultipliers[transportMode] || 1.0));
     const speed = this.getEstimatedSpeed(transportMode);
@@ -336,8 +309,7 @@ class RoutingService {
     const speeds = {
       truck: 55,
       rail: 25,
-      ship: 17,
-      pipeline: 100
+      ship: 17
     };
     return speeds[transportMode] || 30;
   }
@@ -362,13 +334,6 @@ class RoutingService {
             valid: hasRailAccess,
             reason: hasRailAccess ? 'Rail terminal available' : 'No rail access found',
             terminals: service.getNearbyRailTerminals ? service.getNearbyRailTerminals(location).slice(0, 3) : []
-          };
-        case 'pipeline':
-          const hasPipelineAccess = service.hasPipelineAccess ? service.hasPipelineAccess(location, fuelType) : false;
-          return {
-            valid: hasPipelineAccess,
-            reason: hasPipelineAccess ? 'Pipeline access available' : `No pipeline access for ${fuelType}`,
-            connections: service.getPipelineConnections ? service.getPipelineConnections(location, fuelType) : []
           };
         case 'truck':
           if (service.geocodeLocation) {
@@ -496,9 +461,5 @@ class RoutingService {
     return await this.services.ship.getShipRoute(origin, destination);
   }
 
-  async getPipelineRoute(origin, destination, fuelType) {
-    return await this.services.pipeline.getPipelineRoute(origin, destination, fuelType);
-  }
 }
-
 module.exports = new RoutingService();
