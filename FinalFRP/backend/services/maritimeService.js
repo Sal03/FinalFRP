@@ -1,3 +1,68 @@
+// Non-port inland locations that cannot originate or terminate ship routes
+const NON_PORT_LOCATIONS = ['St. Louis, MO', 'Memphis, TN'];
+
+// Pairs that have no navigable waterway connections
+const IMPOSSIBLE_ROUTES = new Set([
+  'St. Louis, MO-Houston, TX',
+  'St. Louis, MO-New Orleans, LA',
+  'St. Louis, MO-Mobile, AL',
+  'St. Louis, MO-Tampa Bay, FL',
+  'St. Louis, MO-Savannah, GA',
+  'St. Louis, MO-Jacksonville, FL',
+  'St. Louis, MO-Miami, FL',
+  'St. Louis, MO-New York/NJ',
+  'St. Louis, MO-Philadelphia, PA',
+  'St. Louis, MO-Norfolk, VA',
+  'St. Louis, MO-Boston, MA',
+  'St. Louis, MO-Long Beach, CA',
+  'St. Louis, MO-Los Angeles, CA',
+  'St. Louis, MO-Seattle, WA',
+  'St. Louis, MO-Portland, OR',
+  'St. Louis, MO-San Francisco/Oakland, CA',
+  'St. Louis, MO-Chicago, IL',
+  'St. Louis, MO-Duluth-Superior, MN/WI',
+  'Memphis, TN-Houston, TX',
+  'Memphis, TN-New Orleans, LA',
+  'Memphis, TN-Mobile, AL',
+  'Memphis, TN-Tampa Bay, FL',
+  'Memphis, TN-Savannah, GA',
+  'Memphis, TN-Jacksonville, FL',
+  'Memphis, TN-Miami, FL',
+  'Memphis, TN-New York/NJ',
+  'Memphis, TN-Philadelphia, PA',
+  'Memphis, TN-Norfolk, VA',
+  'Memphis, TN-Boston, MA',
+  'Memphis, TN-Long Beach, CA',
+  'Memphis, TN-Los Angeles, CA',
+  'Memphis, TN-Seattle, WA',
+  'Memphis, TN-Portland, OR',
+  'Memphis, TN-San Francisco/Oakland, CA',
+  'Memphis, TN-Chicago, IL',
+  'Memphis, TN-Duluth-Superior, MN/WI'
+]);
+
+function isWinterClosed(origin, destination) {
+  const m = new Date().getMonth();
+  const winter = m === 11 || m <= 2; // Dec–Mar
+  const glPorts = ['Chicago, IL', 'Duluth-Superior, MN/WI'];
+  return winter && (glPorts.includes(origin) || glPorts.includes(destination));
+}
+
+function isRouteAllowed(origin, destination) {
+  if (NON_PORT_LOCATIONS.includes(origin) || NON_PORT_LOCATIONS.includes(destination)) {
+    return false;
+  }
+  const pair1 = `${origin}-${destination}`;
+  const pair2 = `${destination}-${origin}`;
+  if (IMPOSSIBLE_ROUTES.has(pair1) || IMPOSSIBLE_ROUTES.has(pair2)) {
+    return false;
+  }
+  if (isWinterClosed(origin, destination)) {
+    return false;
+  }
+  return true;
+}
+
 class MaritimeService {
   constructor() {
     this.shippingRoutes = {
@@ -216,6 +281,7 @@ class MaritimeService {
         shipping_lanes: ['Panama Canal Route'],
         transit_days: 22
       },
+      // Seasonal Great Lakes route (closed Dec–Mar)
       'Chicago, IL-Duluth-Superior, MN/WI': {
         distance_nm: 430,
         distance_miles: 495,
@@ -285,6 +351,10 @@ class MaritimeService {
   async getShipRoute(origin, destination) {
     try {
       console.log(`🚢 Calculating ship route: ${origin} → ${destination}`);
+
+      if (!isRouteAllowed(origin, destination)) {
+        throw new Error('Ship route not possible between ' + origin + ' and ' + destination);
+      }
       
       // Import distance matrix
       const { getDistance } = require('./distanceMatrix');
