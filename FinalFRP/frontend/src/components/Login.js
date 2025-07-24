@@ -2,6 +2,15 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './Login.css';
 
+export const isValidPassword = (password) => {
+  return (
+    typeof password === 'string' &&
+    password.length >= 6 &&
+    /\d/.test(password) &&
+    /[^A-Za-z0-9]/.test(password)
+  );
+};
+
 const Login = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -53,6 +62,11 @@ const Login = () => {
         if (existingUser) {
           setMessage('User already exists! Please use the Login option or try a different name/email.');
         } else {
+          if (!isValidPassword(formData.password)) {
+            setMessage('Password must be at least 6 characters and include a number and special character');
+            setIsLoading(false);
+            return;
+          }
           // Register new user
           const newUser = { ...formData, id: Date.now(), searchCount: 0, isSubscribed: false };
           storedUsers.push(newUser);
