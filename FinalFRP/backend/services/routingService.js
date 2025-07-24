@@ -171,7 +171,22 @@ class RoutingService {
       return route;
     } catch (error) {
       console.error(`${transportMode} routing failed:`, error.message);
-      const fallbackRoute = this.getDistanceMatrixRoute(origin, destination, transportMode);
+
+      const shipUnreachable =
+        transportMode === 'ship' &&
+        /not possible|No ship route/i.test(error.message || '');
+
+      if (shipUnreachable) {
+        // For ship routes explicitly marked as not possible, rethrow so callers
+        // can handle the failure rather than falling back to the matrix
+        throw error;
+      }
+
+      const fallbackRoute = this.getDistanceMatrixRoute(
+        origin,
+        destination,
+        transportMode
+      );
       fallbackRoute.fallback = true;
       fallbackRoute.fallback_reason = error.message;
       return fallbackRoute;
@@ -248,6 +263,7 @@ class RoutingService {
           feasible: this.assessFeasibility(pipelineRoute, fuelType, 'pipeline')
         });
       } catch (error) {
+        errors.push({ mode: 'pipeline', error: error.message });
         console.log(`Pipeline not available: ${error.message}`);
       }
     }
