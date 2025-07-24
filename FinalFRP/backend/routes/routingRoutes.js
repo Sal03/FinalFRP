@@ -2,6 +2,87 @@
 const express = require('express');
 const router = express.Router();
 const routingService = require('../services/routingService');
+const coastalRoutes = require('../data/coastalRoutes.json');
+
+// Generic coastal paths for fallback path generation
+const coastalPaths = {
+  west: [
+    [32.7157, -117.1611],
+    [33.7292, -118.2620],
+    [36.6002, -121.8947],
+    [39.1612, -123.7881],
+    [43.3504, -124.3738],
+    [46.2816, -124.0833],
+    [47.6062, -122.3321]
+  ],
+  gulf: [
+    [29.7050, -95.0030],
+    [29.4724, -94.0572],
+    [29.9511, -90.0715],
+    [30.6944, -88.0431],
+    [27.9506, -82.4572]
+  ],
+  east: [
+    [25.7617, -80.1918],
+    [30.3322, -81.6557],
+    [32.0835, -81.0998],
+    [33.8734, -78.8808],
+    [35.2271, -75.5449],
+    [36.8468, -76.2852],
+    [40.7128, -74.0060],
+    [42.3601, -71.0589]
+  ]
+};
+
+function haversineDistance(a, b) {
+  const toRad = d => (d * Math.PI) / 180;
+  const R = 6371; // km
+  const dLat = toRad(b[0] - a[0]);
+  const dLon = toRad(b[1] - a[1]);
+  const lat1 = toRad(a[0]);
+  const lat2 = toRad(b[0]);
+  const sa = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.atan2(Math.sqrt(sa), Math.sqrt(1 - sa));
+}
+
+function generateCoastalFallback(start, end) {
+  if (!start || !end) return [];
+
+  const paths = Object.values(coastalPaths);
+  let bestPath = paths[0];
+  let bestScore = Infinity;
+
+  paths.forEach(path => {
+    const score = haversineDistance(start, path[0]) + haversineDistance(end, path[path.length - 1]);
+    if (score < bestScore) {
+      bestScore = score;
+      bestPath = path;
+    }
+  });
+
+  const nearestIndex = (coords, path) => {
+    let idx = 0;
+    let min = Infinity;
+    path.forEach((p, i) => {
+      const d = haversineDistance(coords, p);
+      if (d < min) {
+        min = d;
+        idx = i;
+      }
+    });
+    return idx;
+  };
+
+  const startIdx = nearestIndex(start, bestPath);
+  const endIdx = nearestIndex(end, bestPath);
+
+  let slice = bestPath.slice(Math.min(startIdx, endIdx), Math.max(startIdx, endIdx) + 1);
+  if (startIdx > endIdx) slice = slice.reverse();
+
+  slice[0] = start;
+  slice[slice.length - 1] = end;
+  return slice;
+}
 
 // Test all routing services
 router.get('/test', async (req, res) => {
@@ -341,6 +422,23 @@ router.post('/visualization', async (req, res) => {
           // Create route path for visualization
           let routePath = [origin, destination];
           let coordinates = [];
+
+          // If the primary mode is ship, attempt to use detailed coastal waypoints
+          if (primaryMode === 'ship') {
+            const key = `${origin}-${destination}`;
+            const reverseKey = `${destination}-${origin}`;
+            if (coastalRoutes[key] && coastalRoutes[key].waypoints.length > 0) {
+              routePath = coastalRoutes[key].waypoints;
+            } else if (coastalRoutes[reverseKey] && coastalRoutes[reverseKey].waypoints.length > 0) {
+              routePath = [...coastalRoutes[reverseKey].waypoints].reverse();
+            } else {
+              const start = locationCoordinates[origin];
+              const end = locationCoordinates[destination];
+              if (start && end) {
+                routePath = generateCoastalFallback(start, end);
+              }
+            }
+          }
           
           // Multi-modal routes have intermediate points
           if (route.type === 'multimodal' && route.legs) {
@@ -351,10 +449,14 @@ router.post('/visualization', async (req, res) => {
             });
           }
           
-          // Convert location names to coordinates
-          coordinates = routePath
-            .map(location => locationCoordinates[location])
-            .filter(coords => coords);
+          // Convert location names to coordinates when necessary
+          if (Array.isArray(routePath[0])) {
+            coordinates = routePath;
+          } else {
+            coordinates = routePath
+              .map(location => locationCoordinates[location])
+              .filter(coords => coords);
+          }
 
           // If we don't have coordinates, use origin and destination
           if (coordinates.length === 0) {
@@ -809,3 +911,4 @@ router.get('/debug', async (req, res) => {
 });
 
 module.exports = router;
+module.exports.generateCoastalFallback = generateCoastalFallback;
