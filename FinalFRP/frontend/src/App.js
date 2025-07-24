@@ -370,43 +370,6 @@ function App() {
             </ul>
           </div>
 
-          <div className="footer-section">
-            <h3>Solutions</h3>
-            <ul>
-              <li><a href="#logistics">Logistics Professionals</a></li>
-              <li><a href="#energy">Energy Companies</a></li>
-              <li><a href="#government">Government Agencies</a></li>
-              <li><a href="#trucking">Commercial Trucking</a></li>
-              <li><a href="#shipping">Marine Shipping</a></li>
-              <li><a href="#aviation">Aviation Transport</a></li>
-            </ul>
-          </div>
-
-          <div className="footer-section">
-            <h3>Resources</h3>
-            <ul>
-              <li><a href="#blog">Blog & Insights</a></li>
-              <li><a href="#guides">Transportation Guides</a></li>
-              <li><a href="#research">Research Papers</a></li>
-              <li><a href="#case-studies">Case Studies</a></li>
-              <li><a href="#webinars">Webinars</a></li>
-              <li><a href="#api-docs">API Documentation</a></li>
-              <li><Link to="/help">Help Center</Link></li>
-            </ul>
-          </div>
-
-          <div className="footer-section">
-            <h3>Company</h3>
-            <ul>
-              <li><a href="https://www.thampico.com/about" target="_blank" rel="noopener noreferrer">About THAMPICO</a></li>
-              <li><a href="https://www.thampico.com" target="_blank" rel="noopener noreferrer">THAMPICO Program</a></li>
-              <li><a href="#team">Our Team</a></li>
-              <li><a href="#careers">Careers</a></li>
-              <li><Link to="/support">Contact Us</Link></li>
-              <li><a href="#news">Newsroom</a></li>
-              <li><a href="#investors">Investors</a></li>
-            </ul>
-          </div>
         </div>
         
         <div className="footer-bottom">
