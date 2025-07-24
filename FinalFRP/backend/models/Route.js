@@ -28,11 +28,11 @@ const routeSchema = new mongoose.Schema({
   transportMode1: {
     type: String,
     required: true,
-    enum: ['truck', 'rail', 'ship', 'pipeline']
+    enum: ['truck', 'rail', 'ship']
   },
   transportMode2: {
     type: String,
-    enum: ['truck', 'rail', 'ship', 'pipeline'],
+    enum: ['truck', 'rail', 'ship'],
     default: null
   },
   calculatedCost: {
