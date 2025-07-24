@@ -175,6 +175,18 @@ class MaritimeService {
         distance_nm: 3200,
         distance_miles: 3684,
         route_type: 'panama_canal',
+        waypoints: [
+          [33.7292, -118.2620],
+          [23.033, -109.7],
+          [15.0, -96.0],
+          [9.0, -79.6],
+          [9.1, -79.8],
+          [9.3, -79.9],
+          [21.5, -86.9],
+          [25.3, -90.0],
+          [27.0, -94.0],
+          [29.7050, -95.0030]
+        ],
         shipping_lanes: ['Panama Canal Route'],
         transit_days: 14
       },
@@ -182,6 +194,18 @@ class MaritimeService {
         distance_nm: 3400,
         distance_miles: 3914,
         route_type: 'panama_canal',
+        waypoints: [
+          [33.7292, -118.2620],
+          [23.033, -109.7],
+          [15.0, -96.0],
+          [9.0, -79.6],
+          [9.1, -79.8],
+          [9.3, -79.9],
+          [21.5, -86.9],
+          [26.0, -90.0],
+          [28.0, -91.0],
+          [29.9355, -90.0572]
+        ],
         shipping_lanes: ['Panama Canal Route'],
         transit_days: 15
       },
