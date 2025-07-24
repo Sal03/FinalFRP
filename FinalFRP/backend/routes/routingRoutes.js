@@ -15,7 +15,7 @@ router.get('/test', async (req, res) => {
     };
 
     // Test each service individually
-    const services = ['truck', 'rail', 'ship', 'pipeline'];
+    const services = ['truck', 'rail', 'ship'];
     const sampleRoute = { origin: 'Houston, TX', destination: 'New Orleans, LA' };
 
     for (const service of services) {
@@ -233,11 +233,11 @@ router.get('/services/:service', async (req, res) => {
   try {
     const { service } = req.params;
     
-    if (!['truck', 'rail', 'ship', 'pipeline'].includes(service)) {
+    if (!['truck', 'rail', 'ship'].includes(service)) {
       return res.status(400).json({
         success: false,
         error: 'Invalid service',
-        valid_services: ['truck', 'rail', 'ship', 'pipeline']
+        valid_services: ['truck', 'rail', 'ship']
       });
     }
 
@@ -262,13 +262,6 @@ router.get('/services/:service', async (req, res) => {
         name: 'Maritime Shipping Routes',
         capabilities: ['Coastal routes', 'Port-to-port', 'Shipping lanes'],
         coverage: 'US Coastal and Great Lakes',
-        api_required: 'None'
-      };
-    } else if (service === 'pipeline') {
-      serviceInfo = {
-        name: 'Pipeline Networks',
-        capabilities: ['Liquid fuel pipelines', 'Network routing', 'Capacity management'],
-        coverage: 'Major US pipeline networks',
         api_required: 'None'
       };
     }
