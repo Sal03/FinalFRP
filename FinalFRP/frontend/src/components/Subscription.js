@@ -14,24 +14,51 @@ const Subscription = () => {
     setCurrentUser(user);
   }, []);
 
-  const handleSubscribe = (e) => {
+  const handleSubscribe = async (e) => {
     e.preventDefault();
     if (!currentUser || !currentUser.id) {
       setMessage('Please login first.');
       return;
     }
 
-    const updatedUser = { ...currentUser, isSubscribed: true };
-    localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+    try {
+      const res = await fetch('http://localhost:5001/api/payments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          userId: currentUser.id,
+          cardNumber,
+          expiry,
+          cvv
+        })
+      });
 
-    const users = JSON.parse(localStorage.getItem('fuelrouteUsers') || '[]');
-    const idx = users.findIndex((u) => u.id === currentUser.id);
-    if (idx > -1) {
-      users[idx] = updatedUser;
-      localStorage.setItem('fuelrouteUsers', JSON.stringify(users));
+      if (!res.ok) {
+        throw new Error('Payment failed');
+      }
+
+      const data = await res.json();
+      if (data.success) {
+        const updatedUser = { ...currentUser, isSubscribed: true };
+        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+
+        const users = JSON.parse(localStorage.getItem('fuelrouteUsers') || '[]');
+        const idx = users.findIndex((u) => u.id === currentUser.id);
+        if (idx > -1) {
+          users[idx] = updatedUser;
+          localStorage.setItem('fuelrouteUsers', JSON.stringify(users));
+        }
+        setCurrentUser(updatedUser);
+        setMessage('Subscription successful! You now have unlimited searches.');
+      } else {
+        throw new Error(data.error || 'Payment failed');
+      }
+    } catch (err) {
+      console.error('Subscription error', err);
+      setMessage('Subscription failed. Please try again.');
     }
-
-    setMessage('Subscription successful! You now have unlimited searches.');
   };
 
   return (

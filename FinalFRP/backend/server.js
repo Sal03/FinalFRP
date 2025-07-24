@@ -124,6 +124,10 @@ app.use('/api', routeRoutes);
 const geocodingRoutes = require('./routes/geocodingRoutes');
 app.use('/api/geocoding', geocodingRoutes);
 
+// Payment routes
+const paymentRoutes = require('./routes/paymentRoutes');
+app.use('/api/payments', paymentRoutes);
+
 // NEW: Import and use routing routes
 const routingRoutes = require('./routes/routingRoutes');
 app.use('/api/routing', routingRoutes);
@@ -145,6 +149,7 @@ app.use('*', (req, res) => {
       'GET  /api/health',
       'POST /api/calculate-cost',
       'GET  /api/routes',
+      'POST /api/payments',
       'GET  /api/routing/health',
       'POST /api/routing/route',
       'POST /api/routing/validate',
