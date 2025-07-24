@@ -61,13 +61,6 @@ const transportStyles = {
     opacity: 0.8,
     dashArray: '15, 5, 5, 5',
     icon: '🚢'
-  },
-  pipeline: {
-    color: '#7c3aed', // Purple
-    weight: 8,
-    opacity: 0.6,
-    dashArray: null,
-    icon: '⛽'
   }
 };
 
@@ -564,7 +557,7 @@ useEffect(() => {
                           <div className="font-semibold">{name}</div>
                           <div>Coordinates: {coords[0].toFixed(4)}, {coords[1].toFixed(4)}</div>
                           <div className="text-xs text-gray-500 mt-1">
-                            Available for truck, rail, ship, and pipeline transport
+                            Available for truck, rail, and ship transport
                           </div>
                         </div>
                       </Popup>
