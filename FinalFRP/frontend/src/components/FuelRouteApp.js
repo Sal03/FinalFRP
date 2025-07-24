@@ -131,8 +131,7 @@ const FuelRouteApp = ({ backendAPI, apiStatus }) => {
   const transportModes = [
     { value: 'truck', label: 'Truck', suitable: ['local', 'regional'] },
     { value: 'rail', label: 'Rail', suitable: ['regional', 'continental'] },
-    { value: 'ship', label: 'Ship', suitable: ['continental', 'international'] },
-    { value: 'pipeline', label: 'Pipeline', suitable: ['regional', 'continental'] }
+    { value: 'ship', label: 'Ship', suitable: ['continental', 'international'] }
   ];
 
   // Check API health on component mount
@@ -260,8 +259,6 @@ const validateLocationBasic = (location, fieldName) => {
       insights.push(`🚢 Major port - excellent for ship transport`);
     } else if (result.transportMode.infrastructure === 'major_rail_hub') {
       insights.push(`🚂 Major rail hub - excellent for rail transport`);
-    } else if (result.transportMode.infrastructure === 'pipeline_hub') {
-      insights.push(`⛽ Pipeline hub - direct pipeline access available`);
     }
     
     // Fuel-specific insights
@@ -408,7 +405,7 @@ const validateLocationBasic = (location, fieldName) => {
           } else if (routeType === 'international') {
             insights = `🌍 International route (${originInfo.region} → ${destInfo.region}): Ship transport recommended via intermediate hub for optimal cost and safety.`;
           } else if (volumeInTonnes > 15) {
-            insights = `🚆 Large volume transport: Consider rail or pipeline for cost efficiency.`;
+            insights = `🚆 Large volume transport: Consider rail for cost efficiency.`;
           }
           
           // Add fuel-specific insights

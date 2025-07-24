@@ -64,8 +64,7 @@ const FuelForm = ({ backendAPI, apiStatus }) => {
   const transportModes = [
     { value: 'truck', label: 'Truck' },
     { value: 'rail', label: 'Rail' },
-    { value: 'ship', label: 'Ship' },
-    { value: 'pipeline', label: 'Pipeline' }
+    { value: 'ship', label: 'Ship' }
   ];
 
   const handleChange = (e) => {

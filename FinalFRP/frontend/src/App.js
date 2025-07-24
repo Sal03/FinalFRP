@@ -280,7 +280,6 @@ function App() {
               <li><a href="#trucking">Commercial Trucking</a></li>
               <li><a href="#shipping">Marine Shipping</a></li>
               <li><a href="#aviation">Aviation Transport</a></li>
-              <li><a href="#pipeline">Pipeline Networks</a></li>
             </ul>
           </div>
 
