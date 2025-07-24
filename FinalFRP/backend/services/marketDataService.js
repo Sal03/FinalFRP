@@ -96,12 +96,6 @@ class MarketDataService {
             final_rate: baseRates.ship * (1 + (surcharges.ship || 0.20)),
             unit: 'USD_per_ton_mile',
             timestamp: new Date().toISOString()
-          },
-          pipeline: {
-            base_rate: baseRates.pipeline,
-            final_rate: baseRates.pipeline,
-            unit: 'USD_per_ton_mile',
-            timestamp: new Date().toISOString()
           }
         };
       } catch (error) {
@@ -132,8 +126,7 @@ class MarketDataService {
     return {
       truck: 2.85,
       rail: 1.12,
-      ship: 0.67,
-      pipeline: 0.41
+      ship: 0.67
     };
   }
 
@@ -206,8 +199,7 @@ class MarketDataService {
       transport_rate_volatility: {
         truck: 'high',     // Labor and fuel sensitive
         rail: 'medium',    // More stable, long-term contracts
-        ship: 'high',      // Fuel and demand sensitive
-        pipeline: 'low'    // Very stable rates
+        ship: 'high'      // Fuel and demand sensitive
       },
       overall_market_trend: 'stable_with_upward_pressure'
     };
