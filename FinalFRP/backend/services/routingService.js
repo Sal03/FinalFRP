@@ -3,7 +3,7 @@ const railNetworkService = require('./railNetworkService');
 const maritimeService = require('./maritimeService');
 const pipelineService = require('./pipelineService');
 // Import the distance matrix at the top
-const { getDistance, isPipelineAvailable } = require('./distanceMatrix');
+const { getDistance } = require('./distanceMatrix');
 
 // Replace the existing calculateDistance function:
 async function calculateDistance(origin, destination, transportMode = 'truck', fuelType = 'methanol') {
