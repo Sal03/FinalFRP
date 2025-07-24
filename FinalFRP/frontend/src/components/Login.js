@@ -102,6 +102,12 @@ const Login = () => {
           <p>Access your professional dashboard</p>
         </div>
 
+        {/* Subscription Banner */}
+        <div className="subscription-banner">
+          <span>Unlock unlimited searches for just $15/month.</span>
+          <Link to="/subscribe" className="subscribe-cta">Subscribe</Link>
+        </div>
+
         {/* Mode Toggle */}
         <div className="mode-toggle">
           <button 
