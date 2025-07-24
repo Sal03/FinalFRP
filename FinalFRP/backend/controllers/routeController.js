@@ -222,6 +222,7 @@ function calculateTruckCost(volume, distance, fuelType, transportFactors, aiEnha
     
     return {
       cost: validateNumber(totalCost, 'truck cost', 1000),
+      trucksNeeded,
       aiEnhanced,
       aiFactors: transportFactors || { note: 'Static truck pricing' }
     };
@@ -230,6 +231,7 @@ function calculateTruckCost(volume, distance, fuelType, transportFactors, aiEnha
     const fallbackCost = calculateRealisticFallback(volume, distance, 'truck', fuelType);
     return {
       cost: fallbackCost,
+      trucksNeeded: Math.max(1, Math.ceil(volume / (fuelType === 'hydrogen' ? 8 : 12))),
       aiEnhanced: false,
       aiFactors: { error: error.message }
     };
@@ -680,6 +682,9 @@ async function generateRouteOptions(routeData) {
             commodityCost: commodityInfo.totalCost,
             totalCost: allInCost
           },
+
+          // Truck info
+          trucksNeeded: costResult.trucksNeeded,
           
           // AI enhancement indicators
           aiEnhanced: aiEnhanced,
@@ -961,6 +966,7 @@ async function generateTruckOptions(volume, baseDistance, fuelType) {
         capacity: volume,
         utilization: utilizationPercent
       }],
+      trucksNeeded: costResult.trucksNeeded || 1,
       estimatedTime: calculateTruckTransitTime(distance, 1) + ' days',
       
       // ✅ MAIN CHANGE: Show all-in cost instead of just transport
@@ -1023,6 +1029,7 @@ async function generateTruckOptions(volume, baseDistance, fuelType) {
         capacity: volume,
         utilization: utilizationPercent
       }],
+      trucksNeeded: trucksNeeded,
       estimatedTime: calculateTruckTransitTime(distance, trucksNeeded) + ' days',
       
       // ✅ MAIN CHANGE: Show all-in cost
@@ -1041,8 +1048,8 @@ async function generateTruckOptions(volume, baseDistance, fuelType) {
       advantages: trucksNeeded <= 3 ? 
         ['Handles large volume', 'Flexible scheduling', 'Redundancy', 'Includes fuel cost'] :
         ['Handles very large volume', 'Dedicated convoy management', 'Includes fuel cost'],
-      considerations: trucksNeeded > 6 ? 
-        ['Consider rail transport for cost efficiency', 'Complex logistics coordination required'] : 
+      considerations: trucksNeeded > 6 ?
+        ['Consider rail transport for cost efficiency', 'Complex logistics coordination required'] :
         ['Requires convoy coordination', 'Weather-dependent scheduling'],
       aiEnhanced: aiEnhanced,
       aiFactors: aiFactors
@@ -1734,6 +1741,7 @@ function calculateDetailedFallbackForRoute(routeOption, routeData) {
     totalCost: Math.round(totalProjectCost * 100) / 100,
     baseCost: Math.round(baseTransportCost * 100) / 100,
     confidence: 85,
+    trucksNeeded: routeOption.trucksNeeded || (Array.isArray(routeOption.vehicles) ? routeOption.vehicles[0]?.count : undefined),
     
     // ✅ CLEAR BREAKDOWN: Transport fees only
     costBreakdown: {
