@@ -125,30 +125,11 @@ Respond with ONLY a JSON object in this exact format with NO additional text:
         console.log('🤖 PARSED RESULT:', result);
 
         console.log(`✅ OpenAI realistic price response for ${fuelType}:`, result);
-        
-        // Validate the price is within reasonable bounds
-        const reasonablePrices = {
-          hydrogen: { min: 1500, max: 3500 },
-          methanol: { min: 300, max: 600 },
-          ammonia: { min: 350, max: 700 },
-          gasoline: { min: 600, max: 800 },
-          diesel: { min: 650, max: 850 }
-        };
-        
-        const bounds = reasonablePrices[fuelType] || { min: 500, max: 1000 };
-        
-        // Cap the price within reasonable bounds
+
+        // Validate and return the price directly
         let finalPrice = result.price;
         if (typeof finalPrice !== 'number' || isNaN(finalPrice)) {
           throw new Error('Invalid price returned from OpenAI');
-        }
-        
-        if (finalPrice < bounds.min) {
-          finalPrice = bounds.min;
-          console.log(`⚠️ Price too low, adjusted to minimum: $${finalPrice}`);
-        } else if (finalPrice > bounds.max) {
-          finalPrice = bounds.max;
-          console.log(`⚠️ Price too high, adjusted to maximum: $${finalPrice}`);
         }
         
         return {

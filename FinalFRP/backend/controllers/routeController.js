@@ -487,22 +487,10 @@ function calculateRealisticFallback(volume, distance, mode, fuelType) {
 function getCommodityCost(fuelType, volume, openaiPrice = null) {
   let basePrice = commodityPrices[fuelType] || commodityPrices.gasoline;
   
-  // If OpenAI provided a price, use it but cap it at reasonable limits
+  // If OpenAI provided a price, use it directly
   if (openaiPrice && openaiPrice > 0) {
-    // Cap prices at reasonable maximums to prevent unrealistic costs
-    const maxPrices = {
-      hydrogen: 3500,   // Cap hydrogen at $3500/tonne
-      methanol: 600,    // Cap methanol at $600/tonne
-      ammonia: 700,     // Cap ammonia at $700/tonne
-      gasoline: 800,    // Cap gasoline at $800/tonne
-      diesel: 850,      // Cap diesel at $850/tonne
-      ethanol: 700      // Cap ethanol at $700/tonne
-    };
-    
-    const maxPrice = maxPrices[fuelType] || basePrice * 1.5;
-    basePrice = Math.min(openaiPrice, maxPrice);
-    
-    console.log(`💰 Using OpenAI price: $${openaiPrice}/tonne, capped at: $${basePrice}/tonne`);
+    basePrice = openaiPrice;
+    console.log(`💰 Using OpenAI price: $${openaiPrice}/tonne`);
   }
   
   // Add realistic market fluctuation (±3%)
