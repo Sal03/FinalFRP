@@ -179,7 +179,6 @@ function App() {
               <li><a href="#calculator">Calculator</a></li>
               <li><a href="#features">Features</a></li>
               <li><a href="#solutions">Solutions</a></li>
-              <li><a href="#resources">Resources</a></li>
               <li><a href="https://www.thampico.com/about" target="_blank" rel="noopener noreferrer">About</a></li>
             </ul>
           </nav>
@@ -320,20 +319,6 @@ function App() {
         </div>
       </section>
 
-      {/* Resources Section */}
-      <section id="resources" className="resources">
-        <div className="resources-container">
-          <h2>Resources</h2>
-          <p className="resources-subtitle">Guides and data to power your decisions.</p>
-          <ul className="resources-list">
-            <li>Blog &amp; Insights</li>
-            <li>Transportation Guides</li>
-            <li>Research Papers</li>
-            <li>Case Studies</li>
-            <li>API Documentation</li>
-          </ul>
-        </div>
-      </section>
 
       {/* Calculator Section */}
       <section id="calculator">
