@@ -111,8 +111,12 @@ function estimateDistanceFromCoordinates(origin, destination, transportMode) {
     ship: 1.4      // Coastal routing
   };
   
-  const adjustedDistance = Math.round(straightLineDistance * (modeMultipliers[transportMode] || 1.15));
-  console.log(`📏 Estimated distance: ${adjustedDistance} miles (${straightLineDistance.toFixed(0)} miles direct × ${modeMultipliers[transportMode] || 1.15})`);
+  const adjustedDistance = Math.round(
+    straightLineDistance * (modeMultipliers[transportMode] || 1.0)
+  );
+  console.log(
+    `📏 Estimated distance: ${adjustedDistance} miles (${straightLineDistance.toFixed(0)} miles direct × ${modeMultipliers[transportMode] || 1.0})`
+  );
   
   return adjustedDistance;
 }
