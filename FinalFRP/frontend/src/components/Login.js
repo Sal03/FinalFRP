@@ -118,7 +118,7 @@ const Login = () => {
 
         {/* Subscription Banner */}
         <div className="subscription-banner">
-          <span>Unlock unlimited searches for just $15/month.</span>
+          <span>First 3 searches are free – unlock unlimited searches for just $15/month.</span>
           <Link to="/subscribe" className="subscribe-cta">Subscribe</Link>
         </div>
 
