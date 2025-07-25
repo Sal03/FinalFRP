@@ -16,7 +16,9 @@ class OpenAIService {
     
     // Cache for prices to avoid excessive API calls
     this.priceCache = new Map();
-    this.cacheTimeout = 15 * 60 * 1000; // 15 minutes
+    const defaultTimeout = 15 * 60 * 1000; // 15 minutes
+    const envTimeout = parseInt(process.env.OPENAI_PRICE_CACHE_MS, 10);
+    this.cacheTimeout = Number.isFinite(envTimeout) ? envTimeout : defaultTimeout;
     
     console.log('🤖 OpenAI Service initialized with model:', this.model);
     
@@ -42,15 +44,17 @@ class OpenAIService {
 
   // Get cached or fresh price
   async getCachedPrice(key, fetchFunction) {
-    const cached = this.priceCache.get(key);
-    if (cached && (Date.now() - cached.timestamp) < this.cacheTimeout) {
+    const cached = this.cacheTimeout > 0 ? this.priceCache.get(key) : null;
+    if (this.cacheTimeout > 0 && cached && (Date.now() - cached.timestamp) < this.cacheTimeout) {
       console.log(`📋 Using cached price for ${key}`);
       return cached.data;
     }
 
     try {
       const data = await fetchFunction();
-      this.priceCache.set(key, { data, timestamp: Date.now() });
+      if (this.cacheTimeout > 0) {
+        this.priceCache.set(key, { data, timestamp: Date.now() });
+      }
       return data;
     } catch (error) {
       console.error(`Failed to fetch fresh data for ${key}:`, error);
