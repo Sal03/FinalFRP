@@ -197,48 +197,43 @@ const coastalPaths = {
   ]
 };
 
-// Build a simple coastal fallback between two coordinates
+// Build a simplified offshore path between two coordinates
+// This creates an approximate open-ocean route when no coastal data exists.
 const generateCoastalFallback = (start, end) => {
   if (!start || !end) return [];
 
-  const paths = Object.values(coastalPaths);
+  const [lat1, lng1] = start;
+  const [lat2, lng2] = end;
 
-  const calcDist = (a, b) => L.latLng(a[0], a[1]).distanceTo(L.latLng(b[0], b[1]));
+  // Determine which coast we are on to push points seaward
+  const avgLng = (lng1 + lng2) / 2;
+  const offset = 3; // degrees ~ a few hundred km offshore
 
-  let bestPath = paths[0];
-  let bestScore = Infinity;
+  let offsetLat = 0;
+  let offsetLng = 0;
 
-  paths.forEach(path => {
-    const score = calcDist(start, path[0]) + calcDist(end, path[path.length - 1]);
-    if (score < bestScore) {
-      bestScore = score;
-      bestPath = path;
-    }
-  });
+  if (avgLng < -100) {
+    // West coast – water lies to the west
+    offsetLng = -offset;
+  } else if (avgLng > -85) {
+    // East coast – water lies to the east
+    offsetLng = offset;
+  } else {
+    // Gulf coast – water lies to the south
+    offsetLat = -offset;
+  }
 
-  const nearestIndex = (coords, path) => {
-    let idx = 0;
-    let min = Infinity;
-    path.forEach((p, i) => {
-      const d = calcDist(coords, p);
-      if (d < min) {
-        min = d;
-        idx = i;
-      }
-    });
-    return idx;
-  };
+  const mid1 = [
+    lat1 + (lat2 - lat1) * 0.25 + offsetLat,
+    lng1 + (lng2 - lng1) * 0.25 + offsetLng,
+  ];
 
-  const startIdx = nearestIndex(start, bestPath);
-  const endIdx = nearestIndex(end, bestPath);
+  const mid2 = [
+    lat1 + (lat2 - lat1) * 0.75 + offsetLat,
+    lng1 + (lng2 - lng1) * 0.75 + offsetLng,
+  ];
 
-  let slice = bestPath.slice(Math.min(startIdx, endIdx), Math.max(startIdx, endIdx) + 1);
-  if (startIdx > endIdx) slice = slice.reverse();
-
-  slice[0] = start;
-  slice[slice.length - 1] = end;
-
-  return slice;
+  return [start, mid1, mid2, end];
 };
 
 // Major US ports and hubs with coordinates
