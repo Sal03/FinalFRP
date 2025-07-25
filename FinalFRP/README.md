@@ -12,3 +12,8 @@
 - 🤖 Integrate with AI models via Ollama for deeper insights
 - ⚙️ Compare routes and optimize decision-making
 - 🎯 Choose lowest cost or shortest distance preference
+
+## Configuration
+
+Set `OPENAI_PRICE_CACHE_MS` to control how long fuel price estimates are cached.
+The default is 900000 (15 minutes). Use `0` to disable caching entirely.
