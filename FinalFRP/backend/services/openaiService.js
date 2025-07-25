@@ -78,7 +78,7 @@ class OpenAIService {
 
         console.log(`🔍 Fetching current market price for ${fuelType} from OpenAI...`);
         
-        const prompt = `You are a commodity pricing expert. Provide the current realistic wholesale/industrial market price for ${fuelType} in USD per metric ton for January 2025.
+        const prompt = `You are a commodity pricing expert. Provide the current realistic U.S. wholesale/industrial market price for ${fuelType} in USD per metric ton. Prices should reflect current U.S. wholesale market rates.
 
 Current realistic market ranges:
 - Hydrogen (green): $2,000-3,500 per metric ton
