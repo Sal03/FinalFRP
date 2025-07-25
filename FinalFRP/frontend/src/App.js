@@ -308,14 +308,6 @@ function App() {
                 <span>Ammonia</span>
               </div>
             </div>
-            <div className="solution-card">
-              <h3>Government Agencies</h3>
-              <p>Evaluate alternative fuel corridors and policies.</p>
-              <div className="solution-stats">
-                <span>Policy</span>
-                <span>Compliance</span>
-              </div>
-            </div>
           </div>
         </div>
       </section>
