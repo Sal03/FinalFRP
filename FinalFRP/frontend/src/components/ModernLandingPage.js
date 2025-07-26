@@ -260,11 +260,11 @@ export const ModernFooter = () => {
               Making clean energy logistics efficient and cost-effective.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              <a href="https://www.linkedin.com" className="text-gray-400 hover:text-white transition-colors">
                 <span className="sr-only">LinkedIn</span>
                 💼
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              <a href="mailto:info@example.com" className="text-gray-400 hover:text-white transition-colors">
                 <span className="sr-only">Email</span>
                 📧
               </a>
@@ -274,20 +274,20 @@ export const ModernFooter = () => {
           <div>
             <h4 className="font-semibold mb-4">Solutions</h4>
             <ul className="space-y-2 text-gray-400">
-              <li><a href="#" className="hover:text-white transition-colors">Cost Calculator</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Route Optimization</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Market Intelligence</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">API Access</a></li>
+              <li><a href="/" className="hover:text-white transition-colors">Cost Calculator</a></li>
+              <li><a href="/" className="hover:text-white transition-colors">Route Optimization</a></li>
+              <li><a href="/" className="hover:text-white transition-colors">Market Intelligence</a></li>
+              <li><a href="/" className="hover:text-white transition-colors">API Access</a></li>
             </ul>
           </div>
           
           <div>
             <h4 className="font-semibold mb-4">Company</h4>
             <ul className="space-y-2 text-gray-400">
-              <li><a href="#" className="hover:text-white transition-colors">About</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Support</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Privacy</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Terms</a></li>
+              <li><a href="/" className="hover:text-white transition-colors">About</a></li>
+              <li><a href="/support" className="hover:text-white transition-colors">Support</a></li>
+              <li><a href="/" className="hover:text-white transition-colors">Privacy</a></li>
+              <li><a href="/" className="hover:text-white transition-colors">Terms</a></li>
             </ul>
           </div>
         </div>

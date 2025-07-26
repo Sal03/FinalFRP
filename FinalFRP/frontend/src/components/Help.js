@@ -2,8 +2,70 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Help.css';
 
+const faqData = [
+  {
+    category: 'getting-started',
+    question: 'How do I calculate fuel transportation costs?',
+    answer:
+      'Simply enter your fuel type (hydrogen, methanol, or ammonia), volume, origin, destination, and transport mode in our calculator. Our AI will provide accurate cost estimates with detailed breakdowns.'
+  },
+  {
+    category: 'getting-started',
+    question: 'What fuel types are supported?',
+    answer:
+      'We support three alternative fuels: Hydrogen (H₂), Methanol (CH₃OH), and Ammonia (NH₃). Each has specific handling requirements and cost multipliers.'
+  },
+  {
+    category: 'calculations',
+    question: 'How accurate are the cost calculations?',
+    answer:
+      'Our AI-powered calculations achieve 85-95% accuracy by analyzing transport modes, distances, fuel-specific handling requirements, insurance, and regulatory compliance costs.'
+  },
+  {
+    category: 'calculations',
+    question: 'What factors influence transportation costs?',
+    answer:
+      'Key factors include: fuel type and volume, transport distance, available transport modes, fuel handling complexity, safety requirements, insurance, and regulatory compliance.'
+  },
+  {
+    category: 'ai-features',
+    question: 'What is AI Enhancement?',
+    answer:
+      'Our OpenAI integration (GPT-4) processes your route data to provide intelligent cost adjustments, market analysis, and optimization recommendations for fuel transportation.'
+  },
+  {
+    category: 'ai-features',
+    question: 'How does the AI improve calculations?',
+    answer:
+      'The AI analyzes fuel-specific requirements, route complexity, safety protocols, and market conditions to provide enhanced cost estimates and intelligent recommendations.'
+  },
+  {
+    category: 'transport-modes',
+    question: 'Which transport mode should I choose?',
+    answer:
+      'Truck: Best for short distances (<500 miles). Rail: Cost-effective for medium distances. Pipeline: Most efficient for established routes.'
+  },
+  {
+    category: 'transport-modes',
+    question: 'Can I use multiple transport modes?',
+    answer:
+      'Yes! Our multi-modal calculator supports complex routes with intermediate hubs. For example: truck to rail terminal, then rail to destination hub, then truck to final destination.'
+  },
+  {
+    category: 'troubleshooting',
+    question: 'Why am I getting "Backend Offline" status?',
+    answer:
+      'This indicates the AI backend server is not running. The calculator will use manual calculations instead. Contact support if this persists.'
+  },
+  {
+    category: 'troubleshooting',
+    question: 'What if my location is not recognized?',
+    answer:
+      'Our AI validates locations in real-time. Try using full city names, major ports, or airports. Example: "Los Angeles, CA" or "Port of Long Beach, CA".'
+  }
+];
+
 const Help = () => {
-  const [currentUser, setCurrentUser] = useState(null);
   const [activeSection, setActiveSection] = useState('getting-started');
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredFaqs, setFilteredFaqs] = useState([]);
@@ -13,10 +75,6 @@ const Help = () => {
   const searchContainerRef = useRef(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    setCurrentUser(user);
-  }, []);
 
   // Comprehensive search suggestions with actions
   const searchSuggestionsData = [
@@ -92,58 +150,6 @@ const Help = () => {
     { text: 'API integration', action: 'navigate', target: '/support', description: 'Get help with API integration' }
   ];
 
-  const faqData = [
-    {
-      category: 'getting-started',
-      question: 'How do I calculate fuel transportation costs?',
-      answer: 'Simply enter your fuel type (hydrogen, methanol, or ammonia), volume, origin, destination, and transport mode in our calculator. Our AI will provide accurate cost estimates with detailed breakdowns.'
-    },
-    {
-      category: 'getting-started',
-      question: 'What fuel types are supported?',
-      answer: 'We support three alternative fuels: Hydrogen (H₂), Methanol (CH₃OH), and Ammonia (NH₃). Each has specific handling requirements and cost multipliers.'
-    },
-    {
-      category: 'calculations',
-      question: 'How accurate are the cost calculations?',
-      answer: 'Our AI-powered calculations achieve 85-95% accuracy by analyzing transport modes, distances, fuel-specific handling requirements, insurance, and regulatory compliance costs.'
-    },
-    {
-      category: 'calculations',
-      question: 'What factors influence transportation costs?',
-      answer: 'Key factors include: fuel type and volume, transport distance, available transport modes, fuel handling complexity, safety requirements, insurance, and regulatory compliance.'
-    },
-    {
-      category: 'ai-features',
-      question: 'What is AI Enhancement?',
-      answer: 'Our OpenAI integration (GPT-4) processes your route data to provide intelligent cost adjustments, market analysis, and optimization recommendations for fuel transportation.'
-    },
-    {
-      category: 'ai-features',
-      question: 'How does the AI improve calculations?',
-      answer: 'The AI analyzes fuel-specific requirements, route complexity, safety protocols, and market conditions to provide enhanced cost estimates and intelligent recommendations.'
-    },
-    {
-      category: 'transport-modes',
-      question: 'Which transport mode should I choose?',
-      answer: 'Truck: Best for short distances (<500 miles). Rail: Cost-effective for medium distances. Pipeline: Most efficient for established routes.'
-    },
-    {
-      category: 'transport-modes',
-      question: 'Can I use multiple transport modes?',
-      answer: 'Yes! Our multi-modal calculator supports complex routes with intermediate hubs. For example: truck to rail terminal, then rail to destination hub, then truck to final destination.'
-    },
-    {
-      category: 'troubleshooting',
-      question: 'Why am I getting "Backend Offline" status?',
-      answer: 'This indicates the AI backend server is not running. The calculator will use manual calculations instead. Contact support if this persists.'
-    },
-    {
-      category: 'troubleshooting',
-      question: 'What if my location is not recognized?',
-      answer: 'Our AI validates locations in real-time. Try using full city names, major ports, or airports. Example: "Los Angeles, CA" or "Port of Long Beach, CA".'
-    }
-  ];
 
   const quickGuides = [
     {

@@ -63,9 +63,7 @@ const generateCurvedPath = (start, end, transportMode) => {
   const [lat1, lng1] = start;
   const [lat2, lng2] = end;
   
-  // Calculate midpoint
-  const midLat = (lat1 + lat2) / 2;
-  const midLng = (lng1 + lng2) / 2;
+  // Calculate midpoint (unused but kept for potential future use)
   
   // Add curvature based on transport mode and distance
   const distance = Math.sqrt(Math.pow(lat2 - lat1, 2) + Math.pow(lng2 - lng1, 2));
@@ -139,37 +137,6 @@ const decodePolyline = (encoded) => {
 };
 
 
-// Generic coastal paths used when no specific route exists
-const coastalPaths = {
-  west: [
-    [32.7157, -117.1611],
-    [33.7292, -118.2620],
-    [36.6002, -121.8947],
-    [39.1612, -123.7881],
-    [43.3504, -124.3738],
-    [46.2816, -124.0833],
-    [47.6062, -122.3321]
-  ],
-  gulf: [
-    [29.7050, -95.0030],
-    [29.4724, -94.0572],
-    [29.9511, -90.0715],
-    [30.6944, -88.0431],
-    [27.9506, -82.4572]
-  ],
-  east: [
-    [25.7617, -80.1918],
-    [30.3322, -81.6557],
-    [32.0835, -81.0998],
-    [33.8734, -78.8808],
-    [35.2271, -75.5449],
-    [36.8468, -76.2852],
-    [40.7128, -74.0060],
-    [42.3601, -71.0589]
-  ]
-};
-
-
 // Major US ports and hubs with coordinates
 const locations = {
   'Houston, TX': [29.7604, -95.3698],
@@ -204,8 +171,8 @@ const RouteMap = ({
   height = '500px'
 }) => {
   const [routeData, setRouteData] = useState([]);
-  const [mapCenter, setMapCenter] = useState([39.8283, -98.5795]); // Center of US
-  const [mapZoom, setMapZoom] = useState(4);
+  const [mapCenter] = useState([39.8283, -98.5795]); // Center of US
+  const [mapZoom] = useState(4);
 
   // Debug logging - moved inside component
   useEffect(() => {
@@ -218,37 +185,6 @@ const RouteMap = ({
   }, [routeOptions, selectedRoute, origin, destination]);
 
   // Add realistic route paths for different transport modes
-  const getRealisticRoutePath = (origin, destination, transportMode) => {
-    const originCoords = locations[origin];
-    const destCoords = locations[destination];
-    
-    if (!originCoords || !destCoords) return [originCoords, destCoords].filter(Boolean);
-    
-    // Define intermediate waypoints for major routes
-    const routeWaypoints = {
-      'Los Angeles, CA-Seattle, WA': {
-        truck: [[34.0522, -118.2437], [36.7783, -119.4179], [37.7749, -122.4194], [45.5152, -122.6784], [47.6062, -122.3321]], // Via Central Valley, SF, Portland
-        rail: [[34.0522, -118.2437], [35.3733, -119.0187], [37.7749, -122.4194], [45.5152, -122.6784], [47.6062, -122.3321]] // Rail network route
-      },
-      'Houston, TX-New Orleans, LA': {
-        truck: [[29.7604, -95.3698], [30.2241, -93.2044], [29.9511, -90.0715]], // Via I-10
-        rail: [[29.7604, -95.3698], [30.1588, -94.1213], [29.9511, -90.0715]] // Rail corridor
-      }
-      // Add more routes as needed
-    };
-  
-  const routeKey = `${origin}-${destination}`;
-  const reverseKey = `${destination}-${origin}`;
-  
-  if (routeWaypoints[routeKey] && routeWaypoints[routeKey][transportMode]) {
-    return routeWaypoints[routeKey][transportMode];
-  } else if (routeWaypoints[reverseKey] && routeWaypoints[reverseKey][transportMode]) {
-    return [...routeWaypoints[reverseKey][transportMode]].reverse();
-  }
-  
-  // Fallback to direct route for unknown combinations
-  return [originCoords, destCoords];
-};
 
   // Process route options for map display
   // UPDATE the route processing to use backend waypoints:

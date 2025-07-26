@@ -1,6 +1,6 @@
 import HomePageNew from './components/HomePageNew';
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './components/Login';
 import HowItWorks from './components/HowItWorks';
 import Subscription from './components/Subscription';
