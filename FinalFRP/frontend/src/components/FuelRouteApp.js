@@ -130,8 +130,7 @@ const FuelRouteApp = ({ backendAPI, apiStatus }) => {
 
   const transportModes = [
     { value: 'truck', label: 'Truck', suitable: ['local', 'regional'] },
-    { value: 'rail', label: 'Rail', suitable: ['regional', 'continental'] },
-    { value: 'ship', label: 'Ship', suitable: ['continental', 'international'] }
+    { value: 'rail', label: 'Rail', suitable: ['regional', 'continental'] }
   ];
 
   // Check API health on component mount
@@ -255,8 +254,6 @@ const validateLocationBasic = (location, fieldName) => {
     // Transport mode insights
     if (!result.transportMode?.suitable) {
       insights.push(`⚠️ ${transportMode} transport may not be available at this location`);
-    } else if (result.transportMode.infrastructure === 'major_port') {
-      insights.push(`🚢 Major port - excellent for ship transport`);
     } else if (result.transportMode.infrastructure === 'major_rail_hub') {
       insights.push(`🚂 Major rail hub - excellent for rail transport`);
     }
@@ -264,9 +261,7 @@ const validateLocationBasic = (location, fieldName) => {
     // Fuel-specific insights
     if (result.fuelRequirements) {
       const reqs = result.fuelRequirements.requirements;
-      if (fuelType === 'hydrogen' && transportMode === 'ship') {
-        insights.push(`❄️ Cryogenic facilities required for hydrogen`);
-      } else if (fuelType === 'ammonia') {
+      if (fuelType === 'ammonia') {
         insights.push(`🧊 Refrigerated storage required for ammonia`);
       }
     }
@@ -401,9 +396,9 @@ const validateLocationBasic = (location, fieldName) => {
           if (routeType === 'regional' && volumeInTonnes <= 5) {
             insights = `🚛 Short distance within ${originInfo.region}: Truck transport recommended for cost efficiency.`;
           } else if (volumeInTonnes > 10) {
-            insights = `🚢 For 10+ tonnes: Rail or Ship transport recommended for cost efficiency and environmental benefits. Large volumes benefit from bulk transport modes with lower per-unit costs.`;
+            insights = `🚂 For 10+ tonnes: Rail transport recommended for cost efficiency and environmental benefits.`;
           } else if (routeType === 'international') {
-            insights = `🌍 International route (${originInfo.region} → ${destInfo.region}): Ship transport recommended via intermediate hub for optimal cost and safety.`;
+            insights = `🌍 International route (${originInfo.region} → ${destInfo.region}): Use an intermediate hub for optimal cost and safety.`;
           } else if (volumeInTonnes > 15) {
             insights = `🚆 Large volume transport: Consider rail for cost efficiency.`;
           }
@@ -426,18 +421,18 @@ const validateLocationBasic = (location, fieldName) => {
           if (volumeInTonnes <= 5) {
             insights = 'Small volume: Truck transport typically most cost-effective for shorter distances.';
           } else if (volumeInTonnes > 10) {
-            insights = 'For 10+ tonnes: Rail or Ship transport recommended for cost efficiency and environmental benefits.';
+            insights = 'For 10+ tonnes: Rail transport recommended for cost efficiency.';
           }
         }
       }
       
       // Validate transport modes with AI insights
       if (routeType === 'international' && formData.transportMode1 === 'truck' && !formData.intermediateHub) {
-        errors.transport = 'International truck transport requires an intermediate hub or consider ship transport for cross-continental delivery';
+        errors.transport = 'International truck transport requires an intermediate hub for cross-continental delivery';
       }
       
       if (originInfo?.type === 'port' && destInfo?.type === 'port' && formData.transportMode1 === 'truck') {
-        insights += ' 🚢 Port-to-port route: Ship transport may be more efficient.';
+        insights += ' Port-to-port route: consider specialized bulk transport.';
       }
     }
     

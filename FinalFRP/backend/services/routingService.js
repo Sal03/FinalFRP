@@ -1,6 +1,5 @@
 const googleMapsService = require('./googleMapsService');
 const railNetworkService = require('./railNetworkService');
-const maritimeService = require('./maritimeService');
 // Import the distance matrix at the top
 const { getDistance } = require('./distanceMatrix');
 
@@ -50,8 +49,7 @@ async function calculateDistance(origin, destination, transportMode = 'truck', f
 function calculateDurationHours(distance, transportMode) {
   const speeds = {
     truck: 55,    // mph average including stops
-    rail: 25,     // mph freight rail average
-    ship: 17      // mph cargo ship average
+    rail: 25      // mph freight rail average
   };
   
   const speed = speeds[transportMode] || 30;
@@ -107,8 +105,7 @@ function estimateDistanceFromCoordinates(origin, destination, transportMode) {
   // Apply transport mode multipliers
   const modeMultipliers = {
     truck: 1.15,   // Highway routing
-    rail: 1.25,    // Rail network routing
-    ship: 1.4      // Coastal routing
+    rail: 1.25     // Rail network routing
   };
   
   const adjustedDistance = Math.round(
@@ -127,8 +124,7 @@ class RoutingService {
   constructor() {
     this.services = {
       truck: googleMapsService,
-      rail: railNetworkService,
-      ship: maritimeService
+      rail: railNetworkService
     };
     this.isAvailable = true;
     console.log('🗺️ Unified Routing Service initialized');
@@ -150,9 +146,6 @@ class RoutingService {
         case 'rail':
           route = await this.getRailRoute(origin, destination);
           break;
-        case 'ship':
-          route = await this.getShipRoute(origin, destination);
-          break;
         default:
           throw new Error(`Unsupported transport mode: ${transportMode}`);
       }
@@ -164,15 +157,6 @@ class RoutingService {
     } catch (error) {
       console.error(`${transportMode} routing failed:`, error.message);
 
-      const shipUnreachable =
-        transportMode === 'ship' &&
-        /not possible|No ship route/i.test(error.message || '');
-
-      if (shipUnreachable) {
-        // For ship routes explicitly marked as not possible, rethrow so callers
-        // can handle the failure rather than falling back to the matrix
-        throw error;
-      }
 
       const fallbackRoute = this.getDistanceMatrixRoute(
         origin,
@@ -229,7 +213,7 @@ class RoutingService {
   }
 
   // Get multiple route options with different transport modes
-  async getRouteOptions(origin, destination, fuelType, preferredModes = ['truck', 'rail', 'ship']) {
+  async getRouteOptions(origin, destination, fuelType, preferredModes = ['truck', 'rail']) {
     console.log(`🗺️ Getting route options: ${origin} → ${destination} for ${fuelType}`);
     const routes = [];
     const errors = [];
@@ -266,22 +250,19 @@ class RoutingService {
     let score = 0;
     const baseFeasibility = {
       truck: 0.8,
-      rail: 0.9,
-      ship: 0.95
+      rail: 0.9
     };
     score = baseFeasibility[mode] || 0.5;
     if (fuelType === 'hydrogen') {
       if (mode === 'truck') score *= 0.7;
-      if (mode === 'ship') score *= 0.8;
     } else if (fuelType === 'ammonia') {
       if (mode === 'truck') score *= 0.8;
       if (mode === 'rail') score *= 0.9;
-      if (mode === 'ship') score *= 0.9;
     } else if (fuelType === 'methanol') {
       score *= 1.0;
     }
     if (route.distance_miles > 1000 && mode === 'truck') score *= 0.7;
-    if (route.distance_miles < 300 && mode === 'ship') score *= 0.6;
+    
     return Math.round(score * 100) / 100;
   }
 
@@ -290,8 +271,7 @@ class RoutingService {
     const baseDistance = 1000;
     const modeMultipliers = {
       truck: 1.0,
-      rail: 1.15,
-      ship: 1.8
+      rail: 1.15
     };
     const distance = Math.round(baseDistance * (modeMultipliers[transportMode] || 1.0));
     const speed = this.getEstimatedSpeed(transportMode);
@@ -312,8 +292,7 @@ class RoutingService {
   getEstimatedSpeed(transportMode) {
     const speeds = {
       truck: 55,
-      rail: 25,
-      ship: 17
+      rail: 25
     };
     return speeds[transportMode] || 30;
   }
@@ -325,13 +304,6 @@ class RoutingService {
         return { valid: false, reason: `${transportMode} service not available` };
       }
       switch (transportMode) {
-        case 'ship':
-          const nearbyPorts = service.getNearbyPorts ? service.getNearbyPorts(location) : [];
-          return {
-            valid: nearbyPorts.length > 0 || this.isKnownPort(location),
-            reason: nearbyPorts.length > 0 ? 'Port access available' : 'No port access found',
-            nearby_ports: nearbyPorts.slice(0, 3)
-          };
         case 'rail':
           const hasRailAccess = service.hasRailAccess ? service.hasRailAccess(location) : false;
           return {
@@ -459,10 +431,6 @@ class RoutingService {
 
   async getRailRoute(origin, destination) {
     return await this.services.rail.getRailRoute(origin, destination);
-  }
-
-  async getShipRoute(origin, destination) {
-    return await this.services.ship.getShipRoute(origin, destination);
   }
 
 }
