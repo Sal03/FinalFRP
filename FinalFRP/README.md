@@ -17,3 +17,7 @@
 
 Set `OPENAI_PRICE_CACHE_MS` to control how long fuel price estimates are cached.
 The default is 900000 (15 minutes). Use `0` to disable caching entirely.
+
+## Distance Script
+
+Use `node backend/scripts/calculate-distances.js "Origin" "Destination" truck rail` to request OpenAI-generated distances for two modes.
