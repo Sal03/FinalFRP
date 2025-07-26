@@ -94,204 +94,6 @@
   }
 }
 
-/* ✅ NEW: Features Section */
-.features {
-  padding: 4rem 0;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-}
-
-.features-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-.features h2 {
-  text-align: center;
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #1e293b;
-  margin-bottom: 1rem;
-}
-
-.features-subtitle {
-  text-align: center;
-  font-size: 1.125rem;
-  color: #64748b;
-  margin-bottom: 3rem;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.features-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2rem;
-}
-
-@media (min-width: 768px) {
-  .features-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-@media (min-width: 1024px) {
-  .features-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-.feature-card {
-  background: white;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.feature-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
-}
-
-.feature-icon {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-  text-align: center;
-}
-
-.feature-card h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 1rem;
-  text-align: center;
-}
-
-.feature-card p {
-  color: #64748b;
-  line-height: 1.6;
-  margin-bottom: 1.5rem;
-}
-
-.feature-card ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.feature-card li {
-  color: #64748b;
-  font-size: 0.875rem;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #e2e8f0;
-  position: relative;
-  padding-left: 1.5rem;
-}
-
-.feature-card li:last-child {
-  border-bottom: none;
-}
-
-.feature-card li::before {
-  content: "✓";
-  position: absolute;
-  left: 0;
-  color: #10b981;
-  font-weight: 600;
-}
-
-/* ✅ NEW: Solutions Section */
-.solutions {
-  padding: 4rem 0;
-  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-  color: white;
-}
-
-.solutions-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-.solutions h2 {
-  text-align: center;
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-}
-
-.solutions-subtitle {
-  text-align: center;
-  font-size: 1.125rem;
-  color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 3rem;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.solutions-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2rem;
-}
-
-@media (min-width: 768px) {
-  .solutions-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-.solution-card {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 2rem;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  transition: transform 0.2s, background 0.2s;
-}
-
-.solution-card:hover {
-  transform: translateY(-4px);
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.solution-card h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: #fbbf24;
-}
-
-.solution-card p {
-  line-height: 1.6;
-  margin-bottom: 1rem;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.solution-card p strong {
-  color: white;
-  font-weight: 600;
-}
-
-.solution-stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 1.5rem;
-}
-
-.solution-stats span {
-  background: rgba(251, 191, 36, 0.2);
-  color: #fbbf24;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  border: 1px solid rgba(251, 191, 36, 0.3);
-}
 
 /* ✅ NEW: Resources Section */
 .resources {
@@ -407,6 +209,15 @@
   left: 100%;
 }
 
+/* Result Card Styling */
+.result-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  margin-bottom: 1rem;
+}
+
 /* ✅ UPDATED: Backend status indicator */
 .backend-status {
   display: inline-flex;
@@ -504,21 +315,6 @@
     font-size: 0.75rem;
   }
   
-  .features {
-    padding: 3rem 0;
-  }
-
-  .features h2 {
-    font-size: 2rem;
-  }
-
-  .solutions {
-    padding: 3rem 0;
-  }
-
-  .solutions h2 {
-    font-size: 2rem;
-  }
 
   .resources {
     padding: 3rem 0;
@@ -785,6 +581,15 @@ body {
   margin-bottom: 2rem;
   opacity: 0.8;
   line-height: 1.6;
+}
+
+.hero-info-box {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
 }
 
 .hero-buttons {
