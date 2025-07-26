@@ -551,7 +551,6 @@ function estimateDistanceFromNames(origin, destination) {
 }
 
 // Enhanced distance calculation with OpenAI for unknown locations
-}
 
 // ✅ UPDATED: Generate route options with routing service
 async function generateRouteOptions(routeData) {
