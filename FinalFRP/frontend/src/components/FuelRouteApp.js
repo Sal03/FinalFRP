@@ -868,7 +868,7 @@ const validateLocationBasic = (location, fieldName) => {
         <div className="grid md:grid-cols-2 gap-8">
           {/* Form Section */}
           <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4">Calculate Transport Cost - US Ports & Hubs</h2>
+          <h2 className="text-xl font-bold mb-4">Calculate Transport Cost - US Ports & Hubs</h2>
             
             <div className="space-y-4">
               {/* Fuel Type */}
@@ -1258,12 +1258,12 @@ const validateLocationBasic = (location, fieldName) => {
                   {/* Route Options Display - Updated for All-In Costs */}
                   <div className="space-y-4">
                     {result.routeOptions.map((option, index) => (
-                      <div 
-                        key={option.id || index} 
-                        className={`border rounded-lg p-4 transition-all cursor-pointer ${
+                      <div
+                        key={option.id || index}
+                        className={`result-card border rounded-lg p-4 transition-all cursor-pointer ${
                           mapData.selectedRoute && mapData.selectedRoute.id === option.id
-                            ? 'border-blue-500 bg-blue-50 shadow-md' 
-                            : index === 0 || option.recommended ? 'border-green-500 bg-green-50' : 
+                            ? 'border-blue-500 bg-blue-50 shadow-md'
+                            : index === 0 || option.recommended ? 'border-green-500 bg-green-50' :
                               option.aiEnhanced ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:bg-gray-50 hover:border-blue-300'
                         }`}
                         onClick={() => {
