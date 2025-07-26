@@ -145,8 +145,6 @@ async function calculateBasicCost(volume, distance, mode, fuelType) {
       result = calculateTruckCost(validVolume, validDistance, fuelType, transportFactors, aiEnhanced);
     } else if (mode === 'rail') {
       result = calculateRailCost(validVolume, validDistance, fuelType, transportFactors, aiEnhanced);
-    } else if (mode === 'ship') {
-      result = calculateShipCost(validVolume, validDistance, fuelType, transportFactors, aiEnhanced);
     } else {
       // Fallback for unknown modes
       result = calculateGenericCost(validVolume, validDistance, mode, fuelType, aiEnhanced);
@@ -292,63 +290,6 @@ function calculateRailCost(volume, distance, fuelType, transportFactors, aiEnhan
   }
 }
 
-// ✅ NEW: Ship cost calculation - FIXED for NaN issues
-function calculateShipCost(volume, distance, fuelType, transportFactors, aiEnhanced) {
-  try {
-    let rate = 0.08; // Base rate per tonne-mile
-    let fuelMultiplier = getFuelMultiplier(fuelType);
-    
-    // Apply AI factors if available
-    if (transportFactors && typeof transportFactors === 'object' && !transportFactors.error) {
-      if (validateNumber(transportFactors.base_rate_per_mile)) {
-        rate = Math.max(0.05, Math.min(0.15, transportFactors.base_rate_per_mile / 20)); // Convert to per-tonne-mile
-      }
-      if (validateNumber(transportFactors.fuel_surcharge)) {
-        fuelMultiplier *= (1 + transportFactors.fuel_surcharge);
-      }
-      if (validateNumber(transportFactors.special_handling_multiplier)) {
-        fuelMultiplier *= transportFactors.special_handling_multiplier;
-      }
-    }
-    
-    // Distance optimization for ship (very efficient at long distances)
-    let distanceMultiplier = 1.0;
-    if (distance > 2000) {
-      distanceMultiplier = 0.8; // Major efficiency at very long distances
-    } else if (distance > 1000) {
-      distanceMultiplier = 0.9; // Some efficiency at long distances
-    }
-    
-    const transportCost = distance * rate * volume * fuelMultiplier * distanceMultiplier;
-    const portFees = volume * 75; // $75 per tonne port handling
-    const totalCost = transportCost + portFees;
-    
-    console.log(`🚢 Ship cost breakdown:`, {
-      rate: `$${rate}/tonne-mile`,
-      fuelMultiplier: fuelMultiplier.toFixed(2),
-      distanceMultiplier: distanceMultiplier.toFixed(2),
-      transportCost: `$${transportCost.toFixed(2)}`,
-      portFees: `$${portFees.toFixed(2)}`,
-      totalCost: `$${totalCost.toFixed(2)}`,
-      aiEnhanced
-    });
-    
-    return {
-      cost: validateNumber(totalCost, 'ship cost', 300),
-      aiEnhanced,
-      aiFactors: transportFactors || { note: 'Static ship pricing' }
-    };
-  } catch (error) {
-    console.error('❌ Ship cost calculation error:', error);
-    const fallbackCost = calculateRealisticFallback(volume, distance, 'ship', fuelType);
-    return {
-      cost: fallbackCost,
-      aiEnhanced: false,
-      aiFactors: { error: error.message }
-    };
-  }
-}
-
 // ✅ NEW: Generic cost calculation for unknown modes
 function calculateGenericCost(volume, distance, mode, fuelType, aiEnhanced) {
   try {
@@ -408,9 +349,8 @@ const cityDatabase = {
 
 // ✅ Use realistic market rates
 const transportRates = {
-  truck: 0.25,    // $0.25 per tonne-mile 
-  rail: 0.15,     // $0.15 per tonne-mile  
-  ship: 0.08,     // $0.08 per tonne-mile
+  truck: 0.25,    // $0.25 per tonne-mile
+  rail: 0.15,     // $0.15 per tonne-mile
   pipeline: 0.05  // $0.05 per tonne-mile
 };
 
@@ -627,7 +567,7 @@ async function generateRouteOptions(routeData) {
       origin, 
       destination, 
       fuelType, 
-      preferredModes.length > 0 ? preferredModes : ['truck', 'rail', 'ship']
+      preferredModes.length > 0 ? preferredModes : ['truck', 'rail']
     );
     
     console.log(`✅ Routing service found ${routeOptions.routes.length} route options`);
@@ -775,8 +715,6 @@ function generateRouteAdvantages(route) {
     advantages.push('Fast delivery', 'Door-to-door service', 'Flexible scheduling');
   } else if (route.mode === 'rail') {
     advantages.push('Environmentally friendly', 'High capacity', 'Weather independent');
-  } else if (route.mode === 'ship') {
-    advantages.push('Lowest cost per tonne', 'Highest capacity', 'Established routes');
   } else if (route.mode === 'pipeline') {
     advantages.push('Continuous flow', 'Lowest operating cost', 'Weather independent');
   }

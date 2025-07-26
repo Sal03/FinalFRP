@@ -4,7 +4,6 @@ import { MapContainer, TileLayer, Marker, Popup, Polyline, LayersControl, Featur
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './RouteMap.css';
-import coastalRoutes from '../services/coastalRoutes';
 
 // Fix default markers (Leaflet + React issue)
 delete L.Icon.Default.prototype._getIconUrl;
@@ -54,13 +53,6 @@ const transportStyles = {
     opacity: 0.7,
     dashArray: '10, 5',
     icon: '🚂'
-  },
-  ship: {
-    color: '#059669', // Green
-    weight: 5,
-    opacity: 0.8,
-    dashArray: '15, 5, 5, 5',
-    icon: '🚢'
   }
 };
 
@@ -80,14 +72,7 @@ const generateCurvedPath = (start, end, transportMode) => {
   let curveOffset = distance * 0.3; // Base curve
   
   // Mode-specific routing adjustments
-  if (transportMode === 'ship') {
-    // Ships follow coastal routes
-    if (lat1 > 35 && lat2 > 35) { // Northern route
-      curveOffset = distance * 0.4;
-    } else { // Southern/Gulf route
-      curveOffset = distance * 0.2;
-    }
-  } else if (transportMode === 'rail') {
+  if (transportMode === 'rail') {
     // Rail follows network topology
     curveOffset = distance * 0.25;
   } else if (transportMode === 'truck') {
@@ -153,19 +138,6 @@ const decodePolyline = (encoded) => {
   return coordinates;
 };
 
-// Retrieve coastal waypoints from the dataset when available
-const getCoastalWaypoints = (origin, destination) => {
-  const key = `${origin}-${destination}`;
-  const reverseKey = `${destination}-${origin}`;
-
-  if (coastalRoutes[key] && coastalRoutes[key].waypoints.length > 0) {
-    return coastalRoutes[key].waypoints;
-  }
-  if (coastalRoutes[reverseKey] && coastalRoutes[reverseKey].waypoints.length > 0) {
-    return [...coastalRoutes[reverseKey].waypoints].reverse();
-  }
-  return null;
-};
 
 // Generic coastal paths used when no specific route exists
 const coastalPaths = {
@@ -197,44 +169,6 @@ const coastalPaths = {
   ]
 };
 
-// Build a simplified offshore path between two coordinates
-// This creates an approximate open-ocean route when no coastal data exists.
-const generateCoastalFallback = (start, end) => {
-  if (!start || !end) return [];
-
-  const [lat1, lng1] = start;
-  const [lat2, lng2] = end;
-
-  // Determine which coast we are on to push points seaward
-  const avgLng = (lng1 + lng2) / 2;
-  const offset = 3; // degrees ~ a few hundred km offshore
-
-  let offsetLat = 0;
-  let offsetLng = 0;
-
-  if (avgLng < -100) {
-    // West coast – water lies to the west
-    offsetLng = -offset;
-  } else if (avgLng > -85) {
-    // East coast – water lies to the east
-    offsetLng = offset;
-  } else {
-    // Gulf coast – water lies to the south
-    offsetLat = -offset;
-  }
-
-  const mid1 = [
-    lat1 + (lat2 - lat1) * 0.25 + offsetLat,
-    lng1 + (lng2 - lng1) * 0.25 + offsetLng,
-  ];
-
-  const mid2 = [
-    lat1 + (lat2 - lat1) * 0.75 + offsetLat,
-    lng1 + (lng2 - lng1) * 0.75 + offsetLng,
-  ];
-
-  return [start, mid1, mid2, end];
-};
 
 // Major US ports and hubs with coordinates
 const locations = {
@@ -294,13 +228,11 @@ const RouteMap = ({
     const routeWaypoints = {
       'Los Angeles, CA-Seattle, WA': {
         truck: [[34.0522, -118.2437], [36.7783, -119.4179], [37.7749, -122.4194], [45.5152, -122.6784], [47.6062, -122.3321]], // Via Central Valley, SF, Portland
-        rail: [[34.0522, -118.2437], [35.3733, -119.0187], [37.7749, -122.4194], [45.5152, -122.6784], [47.6062, -122.3321]], // Rail network route
-        ship: [[34.0522, -118.2437], [36.2048, -121.8918], [43.3504, -124.3738], [47.6062, -122.3321]] // Coastal route
+        rail: [[34.0522, -118.2437], [35.3733, -119.0187], [37.7749, -122.4194], [45.5152, -122.6784], [47.6062, -122.3321]] // Rail network route
       },
       'Houston, TX-New Orleans, LA': {
         truck: [[29.7604, -95.3698], [30.2241, -93.2044], [29.9511, -90.0715]], // Via I-10
-        rail: [[29.7604, -95.3698], [30.1588, -94.1213], [29.9511, -90.0715]], // Rail corridor
-        ship: [[29.7604, -95.3698], [29.7520, -94.0477], [29.9511, -90.0715]] // Gulf Coast
+        rail: [[29.7604, -95.3698], [30.1588, -94.1213], [29.9511, -90.0715]] // Rail corridor
       }
       // Add more routes as needed
     };
@@ -349,15 +281,7 @@ useEffect(() => {
 
         const primaryMode = route.transportModes?.[0] || 'truck';
 
-        if (primaryMode === 'ship') {
-          // Try to use predefined coastal waypoints
-          routePath = getCoastalWaypoints(origin, destination) || [];
-
-          // If none available, generate a generic coastal fallback
-          if (routePath.length === 0 && originCoords && destCoords) {
-            routePath = generateCoastalFallback(originCoords, destCoords);
-          }
-        }
+        
 
         // Final fallback to curved path
         if (routePath.length === 0 && originCoords && destCoords) {
