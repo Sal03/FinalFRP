@@ -258,7 +258,11 @@ const locations = {
   'Chicago, IL': [41.8781, -87.6298],
   'St. Louis, MO': [38.6270, -90.1994],
   'Memphis, TN': [35.1495, -90.0490],
-  'Duluth-Superior, MN/WI': [46.7867, -92.1005]
+  'Duluth-Superior, MN/WI': [46.7867, -92.1005],
+  'Dallas, TX': [32.7767, -96.7970],
+  'San Antonio, TX': [29.4241, -98.4936],
+  'Detroit, MI': [42.3314, -83.0458],
+  'Milwaukee, WI': [43.0389, -87.9065]
 };
 
 const RouteMap = ({ 
