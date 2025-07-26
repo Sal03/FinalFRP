@@ -53,7 +53,6 @@ const getRouteVisualization = (routeOptions, routeData) =>
     }),
   });
 
-const getLocationsData = () => makeRequest('/routing/locations');
 
 const FuelRouteApp = ({ backendAPI, apiStatus }) => {
   // Form state
@@ -79,7 +78,7 @@ const FuelRouteApp = ({ backendAPI, apiStatus }) => {
   const [localApiStatus, setLocalApiStatus] = useState('checking');
   const [routeInsights, setRouteInsights] = useState('');
   const [locationSuggestions, setLocationSuggestions] = useState({});
-  const [aiValidating, setAiValidating] = useState(false);
+  const [aiValidating] = useState(false);
   const [mapData, setMapData] = useState({
     routeVisualizations: [],
     selectedRoute: null,
@@ -134,6 +133,7 @@ const FuelRouteApp = ({ backendAPI, apiStatus }) => {
   ];
 
   // Check API health on component mount
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const initializeApp = async () => {
       try {
@@ -162,13 +162,19 @@ const FuelRouteApp = ({ backendAPI, apiStatus }) => {
   }, [backendAPI]);
 
   // Add this new useEffect after your existing useEffect hooks (around line 80)
-useEffect(() => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
   const loadMapData = async () => {
     if (result && result.routeOptions && Array.isArray(result.routeOptions) && result.routeOptions.length > 0) {
       try {
         console.log('🗺️ Loading route visualization data...');
-        
-        const mapResponse = await getRouteVisualization(result.routeOptions, formData);
+
+        const { origin, destination, fuelType } = formData;
+        const mapResponse = await getRouteVisualization(result.routeOptions, {
+          origin,
+          destination,
+          fuelType,
+        });
         
         if (mapResponse.success && mapResponse.visualizations) {
           setMapData(prev => ({
@@ -189,7 +195,7 @@ useEffect(() => {
   };
 
   loadMapData();
-}, [result, formData.origin, formData.destination, formData.fuelType]);
+}, [result, formData]);
 
 // Add this function after your existing helper functions (around line 200)
 const handleMapRouteSelect = (selectedRoute) => {
@@ -206,11 +212,13 @@ const handleMapRouteSelect = (selectedRoute) => {
   }
 };
   // Route validation and insights
+  /* eslint-disable react-hooks/exhaustive-deps, no-use-before-define */
   useEffect(() => {
     if (formData.origin && formData.destination) {
       validateRoute();
     }
-  }, [formData.origin, formData.destination, formData.intermediateHub, formData.volume, formData.volumeUnit, locationSuggestions]);
+  }, [formData, locationSuggestions]);
+  /* eslint-enable react-hooks/exhaustive-deps, no-use-before-define */
 
   // REPLACE with this simple validation:
 const validateLocationBasic = (location, fieldName) => {
@@ -246,125 +254,9 @@ const validateLocationBasic = (location, fieldName) => {
   
   setLocationSuggestions(suggestions);
 };
-  
-  // ✅ NEW: Generate location insights based on validation results
-  const generateLocationInsights = (result, transportMode, fuelType) => {
-    const insights = [];
-    
-    // Transport mode insights
-    if (!result.transportMode?.suitable) {
-      insights.push(`⚠️ ${transportMode} transport may not be available at this location`);
-    } else if (result.transportMode.infrastructure === 'major_rail_hub') {
-      insights.push(`🚂 Major rail hub - excellent for rail transport`);
-    }
-    
-    // Fuel-specific insights
-    if (result.fuelRequirements) {
-      const reqs = result.fuelRequirements.requirements;
-      if (fuelType === 'ammonia') {
-        insights.push(`🧊 Refrigerated storage required for ammonia`);
-      }
-    }
-    
-    // Warnings
-    if (result.transportMode?.warnings?.length > 0) {
-      insights.push(...result.transportMode.warnings.map(w => `⚠️ ${w}`));
-    }
-    
-    return insights;
-  };
 
-  const setLocationBasicValidation = (location, fieldName) => {
-    // Enhanced fallback validation for the 20 US port/hub locations
-    const isValid = commonLocations.some(validLocation => 
-      validLocation.toLowerCase().includes(location.toLowerCase()) ||
-      location.toLowerCase().includes(validLocation.toLowerCase())
-    );
-    
-    const suggestions = { ...locationSuggestions };
-    
-    if (isValid) {
-      // Find the matching location from our list
-      const matchedLocation = commonLocations.find(validLocation => 
-        validLocation.toLowerCase().includes(location.toLowerCase()) ||
-        location.toLowerCase().includes(validLocation.toLowerCase())
-      );
-      
-      let region = 'Unknown';
-      let type = 'port';
-      let state = '';
-      
-      // Determine region based on location
-      const locationLower = location.toLowerCase();
-      if (locationLower.includes('houston') || locationLower.includes('new orleans') || 
-          locationLower.includes('mobile') || locationLower.includes('tampa')) {
-        region = 'Gulf Coast';
-      } else if (locationLower.includes('savannah') || locationLower.includes('jacksonville') || 
-                 locationLower.includes('miami')) {
-        region = 'Southeast';
-      } else if (locationLower.includes('new york') || locationLower.includes('philadelphia') || 
-                 locationLower.includes('norfolk') || locationLower.includes('boston')) {
-        region = 'Northeast';
-      } else if (locationLower.includes('long beach') || locationLower.includes('los angeles') || 
-                 locationLower.includes('seattle') || locationLower.includes('portland') || 
-                 locationLower.includes('san francisco') || locationLower.includes('oakland')) {
-        region = 'West Coast';
-      } else if (locationLower.includes('chicago') || locationLower.includes('st. louis') || 
-                 locationLower.includes('memphis') || locationLower.includes('duluth')) {
-        region = 'Inland';
-      }
-      
-      // Extract state
-      if (locationLower.includes('tx')) state = 'TX';
-      else if (locationLower.includes('la')) state = 'LA';
-      else if (locationLower.includes('al')) state = 'AL';
-      else if (locationLower.includes('fl')) state = 'FL';
-      else if (locationLower.includes('ga')) state = 'GA';
-      else if (locationLower.includes('ny')) state = 'NY';
-      else if (locationLower.includes('nj')) state = 'NJ';
-      else if (locationLower.includes('pa')) state = 'PA';
-      else if (locationLower.includes('va')) state = 'VA';
-      else if (locationLower.includes('ma')) state = 'MA';
-      else if (locationLower.includes('ca')) state = 'CA';
-      else if (locationLower.includes('wa')) state = 'WA';
-      else if (locationLower.includes('or')) state = 'OR';
-      else if (locationLower.includes('il')) state = 'IL';
-      else if (locationLower.includes('mo')) state = 'MO';
-      else if (locationLower.includes('tn')) state = 'TN';
-      else if (locationLower.includes('mn')) state = 'MN';
-      else if (locationLower.includes('wi')) state = 'WI';
-      
-      // Determine type
-      if (locationLower.includes('chicago') || locationLower.includes('st. louis') || 
-          locationLower.includes('memphis') || locationLower.includes('duluth')) {
-        type = 'hub';
-      }
-      
-      suggestions[fieldName] = {
-        valid: true,
-        corrected: matchedLocation || location,
-        region: region,
-        type: type,
-        state: state
-      };
-      
-      // Clear validation errors for this field when location is valid
-      setValidationErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors[fieldName];
-        return newErrors;
-      });
-    } else {
-      suggestions[fieldName] = {
-        valid: false,
-        error: 'Please select a location from the list of 20 major US ports/hubs'
-      };
-    }
-    
-    setLocationSuggestions(suggestions);
-  };
 
-  const validateRoute = () => {
+const validateRoute = () => {
     const errors = {};
     let insights = '';
     
