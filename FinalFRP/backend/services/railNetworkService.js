@@ -125,10 +125,15 @@ class RailNetworkService {
       
       // First check the consolidated distance matrix
       let distance = getDistance(origin, destination, 'rail');
-      
+
+      // Attempt to get detailed path using network routing
+      const networkRoute = this.findRailPath(origin, destination);
+
       if (distance) {
         console.log(`✅ Rail distance from matrix: ${distance} miles`);
-        return this.createRailRouteResponse(origin, destination, distance, [origin, destination], 'distance_matrix');
+        const path = networkRoute ? networkRoute.route_path : [origin, destination];
+        const method = networkRoute ? 'distance_matrix_network_path' : 'distance_matrix';
+        return this.createRailRouteResponse(origin, destination, distance, path, method);
       }
 
       // Fallback to local rail distances if not in main matrix
@@ -138,13 +143,14 @@ class RailNetworkService {
 
       if (distance) {
         console.log(`✅ Rail distance from local data: ${distance} miles`);
-        return this.createRailRouteResponse(origin, destination, distance, [origin, destination], 'local_rail_data');
+        const path = networkRoute ? networkRoute.route_path : [origin, destination];
+        const method = networkRoute ? 'local_rail_data_network_path' : 'local_rail_data';
+        return this.createRailRouteResponse(origin, destination, distance, path, method);
       }
 
-      // Try network routing
-      const route = this.findRailPath(origin, destination);
-      if (route) {
-        return route;
+      // Use network routing if available
+      if (networkRoute) {
+        return networkRoute;
       }
 
       // No rail route available

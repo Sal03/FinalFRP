@@ -5,6 +5,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './RouteMap.css';
 import coastalRoutes from '../services/coastalRoutes';
+import railRoutes from '../services/railRoutes';
 
 // Fix default markers (Leaflet + React issue)
 delete L.Icon.Default.prototype._getIconUrl;
@@ -304,9 +305,18 @@ const RouteMap = ({
       }
       // Add more routes as needed
     };
-  
+
   const routeKey = `${origin}-${destination}`;
   const reverseKey = `${destination}-${origin}`;
+
+  if (transportMode === 'rail') {
+    if (railRoutes[routeKey] && railRoutes[routeKey].waypoints.length > 0) {
+      return railRoutes[routeKey].waypoints;
+    }
+    if (railRoutes[reverseKey] && railRoutes[reverseKey].waypoints.length > 0) {
+      return [...railRoutes[reverseKey].waypoints].reverse();
+    }
+  }
   
   if (routeWaypoints[routeKey] && routeWaypoints[routeKey][transportMode]) {
     return routeWaypoints[routeKey][transportMode];
@@ -357,6 +367,11 @@ useEffect(() => {
           if (routePath.length === 0 && originCoords && destCoords) {
             routePath = generateCoastalFallback(originCoords, destCoords);
           }
+        }
+
+        // Try predefined rail or truck paths
+        if (routePath.length === 0) {
+          routePath = getRealisticRoutePath(origin, destination, primaryMode);
         }
 
         // Final fallback to curved path
